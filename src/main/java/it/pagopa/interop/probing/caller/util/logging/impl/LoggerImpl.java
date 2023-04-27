@@ -22,8 +22,8 @@ public class LoggerImpl implements Logger {
   }
 
   @Override
-  public void logMessageTelemetrySend(String name) {
-    log.info("Service with name {} has been published in SQS", name);
+  public void logMessageTelemetrySend(Long id) {
+    log.info("Service with record id {} has been published in SQS", id);
   }
 
   @Override

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.pagopa.interop.probing.caller.dto.EserviceContent;
+import it.pagopa.interop.probing.caller.dto.EserviceContentDto;
 import it.pagopa.interop.probing.caller.util.logging.Logger;
 
 
@@ -27,10 +27,10 @@ public class PollingResultSend {
   private Logger logger;
 
 
-  public void sendMessage(EserviceContent service) throws IOException {
+  public void sendMessage(EserviceContentDto service) throws IOException {
     SendMessageRequest sendMessageRequest = new SendMessageRequest().withQueueUrl(sqsUrl)
         .withMessageBody(objectMapper.writeValueAsString(service));
     amazonSQS.sendMessage(sendMessageRequest);
-    logger.logMessagePollingSend(service.getId());
+    logger.logMessagePollingSend(service.getEserviceRecordId());
   }
 }

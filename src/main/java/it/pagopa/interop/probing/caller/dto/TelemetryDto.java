@@ -9,8 +9,8 @@ import lombok.Data;
 @Builder
 public class TelemetryDto {
 
-  @JsonProperty("serviceName")
-  private String serviceName;
+  @JsonProperty("eserviceRecordId")
+  private Long eserviceRecordId;
 
   @JsonProperty("status")
   private EserviceStatus status;

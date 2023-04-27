@@ -7,7 +7,7 @@ public interface Logger {
 
   void logMessagePollingSend(String id);
 
-  void logMessageTelemetrySend(String name);
+  void logMessageTelemetrySend(Long id);
 
   void logMessageException(Exception exception);
 }
