@@ -12,12 +12,12 @@ public class LoggerImpl implements Logger {
 
 
   @Override
-  public void logMessageReceiver(String id) {
+  public void logMessageReceiver(Long id) {
     log.info("Writing message, id={}", id);
   }
 
   @Override
-  public void logMessagePollingSend(String id) {
+  public void logMessagePollingSend(Long id) {
     log.info("Service with record id {} has been published in SQS", id);
   }
 
@@ -30,4 +30,5 @@ public class LoggerImpl implements Logger {
   public void logMessageException(Exception exception) {
     log.error(ExceptionUtils.getStackTrace(exception));
   }
+
 }

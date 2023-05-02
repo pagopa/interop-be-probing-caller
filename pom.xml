@@ -20,6 +20,7 @@
 		<spring.cloud.version>2020.0.3</spring.cloud.version>
 		<awsspring.cloud.version>2.3.0</awsspring.cloud.version>
 		<aws.java.sdk.bom.version>1.12.414</aws.java.sdk.bom.version>
+		<javax.validation.api>2.0.1.Final</javax.validation.api>
 	</properties>
 	<organization>
 		<name>PagoPa</name>
@@ -56,16 +57,53 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-sqs</artifactId>
 		</dependency>
-	    <dependency>
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>${javax.validation.api}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-hc5</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-jackson</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>io.awspring.cloud</groupId>
 			<artifactId>spring-cloud-starter-aws-messaging</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-inline</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-junit-jupiter</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
