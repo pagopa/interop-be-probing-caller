@@ -6,6 +6,7 @@ import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import com.baeldung.soap.ws.client.Request;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 import io.awspring.cloud.messaging.listener.SqsMessageDeletionPolicy;
@@ -43,6 +44,7 @@ public class PollingReceiver {
       deletionPolicy = SqsMessageDeletionPolicy.ON_SUCCESS)
   public void receiveStringMessage(final String message) throws IOException {
     EserviceContentDto service = mapper.readValue(message, EserviceContentDto.class);
+
     try {
       telemetryResultSend.sendMessage(callProbing(service));
       pollingResultSend.sendMessage(service);
@@ -58,13 +60,14 @@ public class PollingReceiver {
     long before = System.currentTimeMillis();
 
     Response response = null;
+
     try {
       if (service.technology().equals(EserviceTechnology.REST)) {
         response = feignClientConfig.feignRestClient().probing(
             URI.create(Objects.nonNull(service.basePath()) ? service.basePath()[0] : null));
       } else {
-        response =
-            feignClientConfig.feignSoapClient().probing(URI.create(service.basePath()[0]), null);
+        response = feignClientConfig.feignSoapClient().probing(URI.create(service.basePath()[0]),
+            new Request());
       }
       if (HttpStatus.NO_CONTENT == HttpStatus.valueOf(response.status())) {
         telemetryResult.status(EserviceStatus.OK);
