@@ -7,5 +7,7 @@ public class ProjectConstants {
   }
 
   public static final String GENERIC_EXCEPTION = "Generic Exception";
+  public static final String SQS_TELEMETRY = "Telemetry";
+  public static final String SQS_POLLING = "Polling";
 
 }

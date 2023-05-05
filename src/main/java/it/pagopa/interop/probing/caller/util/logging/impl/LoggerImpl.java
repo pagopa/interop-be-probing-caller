@@ -2,6 +2,7 @@ package it.pagopa.interop.probing.caller.util.logging.impl;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.stereotype.Component;
+import it.pagopa.interop.probing.caller.dto.TelemetryDto;
 import it.pagopa.interop.probing.caller.util.logging.Logger;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,14 +17,20 @@ public class LoggerImpl implements Logger {
     log.info("Writing message, id={}", id);
   }
 
+
   @Override
-  public void logMessagePollingSend(Long id) {
-    log.info("Service with record id {} has been published in SQS", id);
+  public void logMessageCallProbing(String technology, String basePath) {
+    log.info("Calling {} service with base path: {}", technology, basePath);
   }
 
   @Override
-  public void logMessageTelemetrySend(Long id) {
-    log.info("Service with record id {} has been published in SQS", id);
+  public void logMessageResponseCallProbing(TelemetryDto telemetry) {
+    log.info("Result: {}", telemetry.toString());
+  }
+
+  @Override
+  public void logMessageSend(Long id, String topic) {
+    log.info("Service with record id {} has been published in {} SQS", id, topic);
   }
 
   @Override
