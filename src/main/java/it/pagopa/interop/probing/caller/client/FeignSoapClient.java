@@ -2,10 +2,10 @@ package it.pagopa.interop.probing.caller.client;
 
 import java.net.URI;
 import org.springframework.cloud.openfeign.FeignClient;
-import com.baeldung.soap.ws.client.Request;
 import feign.Headers;
 import feign.RequestLine;
 import feign.Response;
+import it.pagopa.interop.probing.caller.soap.ws.client.Request;
 
 @FeignClient(name = "feignSoapClient")
 public interface FeignSoapClient {
