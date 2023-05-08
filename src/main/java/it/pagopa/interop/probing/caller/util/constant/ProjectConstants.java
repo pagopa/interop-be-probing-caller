@@ -1,4 +1,4 @@
-package it.pagopa.interop.probing.caller.util;
+package it.pagopa.interop.probing.caller.util.constant;
 
 public class ProjectConstants {
 

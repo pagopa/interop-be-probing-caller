@@ -8,7 +8,7 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.interop.probing.caller.dto.EserviceContentDto;
-import it.pagopa.interop.probing.caller.util.ProjectConstants;
+import it.pagopa.interop.probing.caller.util.constant.ProjectConstants;
 import it.pagopa.interop.probing.caller.util.logging.Logger;
 
 

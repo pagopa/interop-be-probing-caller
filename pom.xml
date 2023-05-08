@@ -68,7 +68,6 @@
 		<dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
-			<version>${javax.validation.api}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
@@ -81,6 +80,10 @@
 		<dependency>
 			<groupId>io.github.openfeign</groupId>
 			<artifactId>feign-jackson</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-soap</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.awspring.cloud</groupId>
@@ -143,48 +146,85 @@
 			<version>1.1</version>
 		</dependency>
 		<dependency>
-			<groupId>io.github.openfeign</groupId>
-			<artifactId>feign-jaxb</artifactId>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+			<version>4.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>io.github.openfeign</groupId>
-			<artifactId>feign-soap</artifactId>
+			<groupId>org.openapitools</groupId>
+			<artifactId>jackson-databind-nullable</artifactId>
+			<version>0.2.1</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.activation</groupId>
-			<artifactId>activation</artifactId>
-			<version>1.1</version>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>2.8.0</version>
 		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jaxb</groupId>
-			<artifactId>jaxb-runtime</artifactId>
-		</dependency>
+
 	</dependencies>
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jaxws-maven-plugin</artifactId>
-				<version>2.6</version>
+				<artifactId>jaxb2-maven-plugin</artifactId>
+				<version>3.1.0</version>
 				<executions>
 					<execution>
+						<id>xjc</id>
 						<goals>
-							<goal>wsimport</goal>
+							<goal>xjc</goal>
 						</goals>
 					</execution>
 				</executions>
 				<configuration>
-					<wsdlDirectory>${project.basedir}/src/main/resources/
-					</wsdlDirectory>
-					<packageName>it.pagopa.interop.probing.caller.soap.ws.client</packageName>
-					<sourceDestDir>
-						${project.build.directory}/generated-sources/
-					</sourceDestDir>
+					<packageName>it.pagopa.interop.probing.caller.soap.probing
+					</packageName>
+					<sourceType>wsdl</sourceType>
+					<sources>
+						<source>${project.basedir}/docs/wsdl/probing.wsdl
+						</source>
+					</sources>
+					<outputDirectory>${project.basedir}/target/generated-sources/jaxb2
+					</outputDirectory>
+					<clearOutputDir>false</clearOutputDir>
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
+				<groupId>org.openapitools</groupId>
+				<artifactId>openapi-generator-maven-plugin</artifactId>
+				<version>5.1.0</version>
+				<executions>
+					<execution>
+						<id>spring-server</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/docs/openapi/probing-service-v1.yaml
+							</inputSpec>
+							<generatorName>spring</generatorName>
+							<apiPackage>it.pagopa.interop.probing.caller.api</apiPackage>
+							<modelPackage>it.pagopa.interop.probing.caller.dtos
+							</modelPackage>
+							<enablePostProcessFile>true</enablePostProcessFile>
+							<configOptions>
+								<additionalModelTypeAnnotations>
+									@lombok.Builder
+									@lombok.NoArgsConstructor
+									@lombok.AllArgsConstructor
+									@lombok.experimental.Accessors(chain = true, fluent = true)
+								</additionalModelTypeAnnotations>
+								<serializableModel>true</serializableModel>
+								<interfaceOnly>true</interfaceOnly>
+								<unhandledException>true</unhandledException>
+							</configOptions>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
