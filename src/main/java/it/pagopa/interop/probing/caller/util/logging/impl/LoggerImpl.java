@@ -24,6 +24,11 @@ public class LoggerImpl implements Logger {
   }
 
   @Override
+  public void logResultCallProbing(int code, String detail) {
+    log.info("Response {} with detail: {}", code, detail);
+  }
+
+  @Override
   public void logMessageResponseCallProbing(TelemetryDto telemetry) {
     log.info("Result: {}", telemetry.toString());
   }

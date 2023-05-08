@@ -12,6 +12,8 @@ public interface Logger {
 
   void logMessageCallProbing(String technology, String basePath);
 
+  void logResultCallProbing(int code, String detail);
+
   void logMessageResponseCallProbing(TelemetryDto telemetry);
 
 }
