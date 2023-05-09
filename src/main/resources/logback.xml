@@ -39,12 +39,23 @@
 
 	<logger name="org.springframework.boot" level="WARN" />
 	<logger name="com.amazonaws" level="WARN" />
-	<logger name="org.springframework.cloud" level="WARN" />
 	<logger name="io.awspring.cloud" level="WARN" />
 	<logger name="org.projectlombok" level="WARN" />
+	<logger name="org.junit.jupiter" level="WARN" />
+	<logger name="org.mockito" level="WARN" />
 	<logger name="org.apache.commons" level="WARN" />
 	<logger name="org.slf4j" level="WARN" />
+	<logger name="org.springframework.cloud" level="WARN" />
 	<logger name="ch.qos.logback" level="WARN" />
+	<logger name="org.openapitools" level="WARN" />
+	<logger name="io.springfox" level="WARN" />
+	<logger name="javax.validation" level="WARN" />
+	<logger name="io.github.openfeign" level="WARN" />
+	<logger name="jakarta.xml.bind" level="WARN" />
+	<logger name="javax.xml.bind" level="WARN" />
+	<logger name="com.squareup.okhttp3" level="WARN" />
+	<logger name="javax.activation" level="WARN" />
+	<logger name="org.glassfish.jaxb" level="WARN" />
 
 	<logger name="it.pagopa.interop.probing.caller" level="INFO" />
 

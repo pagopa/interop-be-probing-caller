@@ -5,12 +5,13 @@ import java.time.OffsetDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.awspring.cloud.messaging.listener.SqsMessageDeletionPolicy;
+import io.awspring.cloud.messaging.listener.annotation.SqsListener;
 import it.pagopa.interop.probing.caller.dto.EserviceContentDto;
 import it.pagopa.interop.probing.caller.dto.PollingDto;
 import it.pagopa.interop.probing.caller.producer.PollingResultSend;
 import it.pagopa.interop.probing.caller.producer.TelemetryResultSend;
 import it.pagopa.interop.probing.caller.util.ClientUtil;
-import it.pagopa.interop.probing.caller.util.EserviceTechnology;
 import it.pagopa.interop.probing.caller.util.logging.Logger;
 
 
@@ -33,16 +34,12 @@ public class PollingReceiver {
   private ClientUtil clientUtil;
 
 
-  // @SqsListener(value = "${amazon.sqs.end-point.poll-queue}",
-  // deletionPolicy = SqsMessageDeletionPolicy.ON_SUCCESS)
+  @SqsListener(value = "${amazon.sqs.end-point.poll-queue}",
+      deletionPolicy = SqsMessageDeletionPolicy.ON_SUCCESS)
   public void receiveStringMessage(final String message) throws IOException {
-    // EserviceContentDto service = mapper.readValue(message, EserviceContentDto.class);
-    // EserviceContentDto service =
-    // EserviceContentDto.builder().basePath(new String[] {"http://IT-PF23YL12:8088/Probing"})
-    // .eserviceRecordId(1L).technology(EserviceTechnology.SOAP).build();
-    EserviceContentDto service =
-        EserviceContentDto.builder().basePath(new String[] {"http://localhost:8090/probing"})
-            .eserviceRecordId(1L).technology(EserviceTechnology.SOAP).build();
+
+    EserviceContentDto service = mapper.readValue(message, EserviceContentDto.class);
+
     try {
       telemetryResultSend.sendMessage(clientUtil.callProbing(service));
 
