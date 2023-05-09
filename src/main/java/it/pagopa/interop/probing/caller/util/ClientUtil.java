@@ -62,7 +62,7 @@ public class ClientUtil {
     Response response = restClientConfig.feignRestClient()
         .probing(URI.create(Objects.nonNull(service.basePath()) ? service.basePath()[0] : null));
     Problem problem = new ObjectMapper().readValue(response.body().toString(), Problem.class);
-    logger.logResultCallProbing(response.status(), problem.getDetail());
+    logger.logResultCallProbing(response.status(), response.body().toString());
     return receiverResponse(response.status(), telemetryResult, problem.getDetail(), before);
   }
 

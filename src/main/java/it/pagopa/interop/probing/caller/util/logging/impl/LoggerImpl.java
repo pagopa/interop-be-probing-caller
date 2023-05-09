@@ -11,21 +11,19 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class LoggerImpl implements Logger {
 
-
   @Override
   public void logMessageReceiver(Long id) {
     log.info("Writing message, id={}", id);
   }
 
-
   @Override
-  public void logMessageCallProbing(String technology, String basePath) {
-    log.info("Calling {} service with base path: {}", technology, basePath);
+  public void logMessageCallProbing(String technology, String url) {
+    log.info("Calling public authority service, technology={}, url={}", technology, url);
   }
 
   @Override
-  public void logResultCallProbing(int code, String detail) {
-    log.info("Response {} with detail: {}", code, detail);
+  public void logResultCallProbing(int code, String body) {
+    log.info("Probing response received, code={}, body={}", code, body);
   }
 
   @Override
@@ -33,9 +31,9 @@ public class LoggerImpl implements Logger {
     log.info("Result: {}", telemetry.toString());
   }
 
-  @Override
-  public void logMessageSend(Long id, String topic) {
-    log.info("Service with record id {} has been published in {} SQS", id, topic);
+  public void logMessagePushedToQueue(long eserviceRecordId, String queueUrl, String queueGroupId) {
+    log.info("message has been pushed in queue. eserviceRecordId={}, queue={}, groupId={}",
+        eserviceRecordId, queueUrl, queueGroupId);
   }
 
   @Override

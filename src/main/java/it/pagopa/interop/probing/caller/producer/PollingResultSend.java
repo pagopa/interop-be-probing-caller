@@ -32,6 +32,7 @@ public class PollingResultSend {
     SendMessageRequest sendMessageRequest = new SendMessageRequest().withQueueUrl(sqsUrl)
         .withMessageBody(objectMapper.writeValueAsString(service));
     amazonSQS.sendMessage(sendMessageRequest);
-    logger.logMessageSend(service.eserviceRecordId(), ProjectConstants.SQS_POLLING);
+    logger.logMessagePushedToQueue(service.eserviceRecordId(), ProjectConstants.SQS_POLLING_QUEUE,
+        ProjectConstants.SERVICE_GROUP_ID);
   }
 }

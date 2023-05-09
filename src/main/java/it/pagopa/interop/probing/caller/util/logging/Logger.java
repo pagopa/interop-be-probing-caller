@@ -6,13 +6,13 @@ public interface Logger {
 
   void logMessageReceiver(Long id);
 
-  void logMessageSend(Long id, String topic);
+  void logMessagePushedToQueue(long eserviceRecordId, String queueUrl, String queueGroupId);
 
   void logMessageException(Exception exception);
 
-  void logMessageCallProbing(String technology, String basePath);
+  void logMessageCallProbing(String technology, String url);
 
-  void logResultCallProbing(int code, String detail);
+  void logResultCallProbing(int code, String body);
 
   void logMessageResponseCallProbing(TelemetryDto telemetry);
 
