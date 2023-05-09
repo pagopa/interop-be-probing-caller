@@ -1,15 +1,18 @@
 package it.pagopa.interop.probing.caller.util;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 import it.pagopa.interop.probing.caller.config.client.RestClientConfig;
 import it.pagopa.interop.probing.caller.config.client.SoapClientConfig;
 import it.pagopa.interop.probing.caller.dto.EserviceContentDto;
 import it.pagopa.interop.probing.caller.dto.TelemetryDto;
+import it.pagopa.interop.probing.caller.dtos.Problem;
 import it.pagopa.interop.probing.caller.soap.probing.ObjectFactory;
 import it.pagopa.interop.probing.caller.soap.probing.ProbingResponse;
 import it.pagopa.interop.probing.caller.util.constant.ProjectConstants;
@@ -36,7 +39,6 @@ public class ClientUtil {
 
     long before = System.currentTimeMillis();
     telemetryResult.checkTime(String.valueOf(before));
-
     try {
 
       if (service.technology().equals(EserviceTechnology.REST)) {
@@ -56,10 +58,12 @@ public class ClientUtil {
   }
 
   private TelemetryDto callRest(TelemetryDto telemetryResult, EserviceContentDto service,
-      long before) {
+      long before) throws IOException {
     Response response = restClientConfig.feignRestClient()
         .probing(URI.create(Objects.nonNull(service.basePath()) ? service.basePath()[0] : null));
-    return receiverResponse(response.status(), telemetryResult, before);
+    Problem problem = new ObjectMapper().readValue(response.body().toString(), Problem.class);
+    logger.logResultCallProbing(response.status(), response.body().toString());
+    return receiverResponse(response.status(), telemetryResult, problem.getDetail(), before);
   }
 
   private TelemetryDto callSoap(TelemetryDto telemetryResult, EserviceContentDto service,
@@ -69,16 +73,16 @@ public class ClientUtil {
         URI.create(Objects.nonNull(service.basePath()) ? service.basePath()[0] : null),
         o.createProbingRequest());
 
-    return receiverResponse(Integer.valueOf(response.getStatus()), telemetryResult, before);
+    return receiverResponse(Integer.valueOf(response.getStatus()), telemetryResult, null, before);
   }
 
-  private TelemetryDto receiverResponse(int status, TelemetryDto telemetryResult, long before) {
-
-    if (HttpStatus.OK == HttpStatus.valueOf(status)) {
+  private TelemetryDto receiverResponse(int status, TelemetryDto telemetryResult, String koReason,
+      long before) {
+    if (HttpStatus.valueOf(status).is2xxSuccessful()) {
       long elapsedTime = System.currentTimeMillis() - before;
       return telemetryResult.status(EserviceStatus.OK).responseTime(elapsedTime);
     } else {
-      return telemetryResult.status(EserviceStatus.KO).koReason(null);
+      return telemetryResult.status(EserviceStatus.KO).koReason(koReason);
     }
   }
 }

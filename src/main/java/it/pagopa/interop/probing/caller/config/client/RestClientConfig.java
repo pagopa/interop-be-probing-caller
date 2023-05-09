@@ -17,8 +17,8 @@ public class RestClientConfig {
   FeignRestClient feignRestClient;
 
   public RestClientConfig() {
-    feignRestClient = Feign.builder().decode404().encoder(new JacksonEncoder()).errorDecoder(null)
-        .decoder(new JacksonDecoder()).target(Target.EmptyTarget.create(FeignRestClient.class));
+    feignRestClient = Feign.builder().encoder(new JacksonEncoder()).decoder(new JacksonDecoder())
+        .target(Target.EmptyTarget.create(FeignRestClient.class));
 
   }
 }
