@@ -1,10 +1,12 @@
 package it.pagopa.interop.probing.caller.consumer;
 
 import java.io.IOException;
+import java.time.OffsetDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.interop.probing.caller.dto.EserviceContentDto;
+import it.pagopa.interop.probing.caller.dto.PollingDto;
 import it.pagopa.interop.probing.caller.producer.PollingResultSend;
 import it.pagopa.interop.probing.caller.producer.TelemetryResultSend;
 import it.pagopa.interop.probing.caller.util.ClientUtil;
@@ -39,11 +41,15 @@ public class PollingReceiver {
     // EserviceContentDto.builder().basePath(new String[] {"http://IT-PF23YL12:8088/Probing"})
     // .eserviceRecordId(1L).technology(EserviceTechnology.SOAP).build();
     EserviceContentDto service =
-        EserviceContentDto.builder().basePath(new String[] {"http://localhost:3000/probing"})
-            .eserviceRecordId(1L).technology(EserviceTechnology.REST).build();
+        EserviceContentDto.builder().basePath(new String[] {"http://localhost:8090/probing"})
+            .eserviceRecordId(1L).technology(EserviceTechnology.SOAP).build();
     try {
       telemetryResultSend.sendMessage(clientUtil.callProbing(service));
-      pollingResultSend.sendMessage(service);
+
+      PollingDto polling = PollingDto.builder().eserviceRecordId(service.eserviceRecordId())
+          .responseTime(OffsetDateTime.now()).build();
+
+      pollingResultSend.sendMessage(polling);
     } catch (IOException e) {
       logger.logMessageException(e);
       throw e;

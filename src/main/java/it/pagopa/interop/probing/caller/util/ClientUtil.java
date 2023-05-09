@@ -69,7 +69,7 @@ public class ClientUtil {
         URI.create(Objects.nonNull(service.basePath()) ? service.basePath()[0] : null),
         o.createProbingRequest());
 
-    return receiverResponse(response.getStatus(), telemetryResult, before);
+    return receiverResponse(Integer.valueOf(response.getStatus()), telemetryResult, before);
   }
 
   private TelemetryDto receiverResponse(int status, TelemetryDto telemetryResult, long before) {

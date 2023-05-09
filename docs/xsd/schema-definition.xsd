@@ -1,0 +1,20 @@
+
+<xsd:schema
+	targetNamespace="http://it/pagopa/interop/probing"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:element name="probingRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="probingResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="status" type="xsd:string" />
+				<xsd:element name="description" type="xsd:string" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>
