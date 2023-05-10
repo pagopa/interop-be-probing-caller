@@ -189,7 +189,8 @@
 					</execution>
 				</executions>
 				<configuration>
-					<packageName>it.pagopa.interop.probing.caller.soap.probing</packageName>
+					<packageName>it.pagopa.interop.probing.caller.soap.probing
+					</packageName>
 					<schemaDirectory>${project.basedir}/docs/xsd</schemaDirectory>
 					<schemaFiles>*.xsd</schemaFiles>
 					<outputDirectory>${project.basedir}/target/generated-sources/jaxb2
