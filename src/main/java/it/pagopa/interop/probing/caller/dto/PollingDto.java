@@ -20,6 +20,6 @@ public class PollingDto {
 
   @JsonProperty("responseTime")
   @NotNull(message = "must not be null")
-  private OffsetDateTime responseTime;
+  private OffsetDateTime responseReceived;
 
 }

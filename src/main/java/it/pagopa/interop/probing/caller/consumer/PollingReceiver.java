@@ -22,10 +22,10 @@ public class PollingReceiver {
   ObjectMapper mapper;
 
   @Autowired
-  PollingResultSend pollingResultSend;
+  private PollingResultSend pollingResultSend;
 
   @Autowired
-  TelemetryResultSend telemetryResultSend;
+  private TelemetryResultSend telemetryResultSend;
 
   @Autowired
   private Logger logger;
@@ -43,8 +43,9 @@ public class PollingReceiver {
     try {
 
       telemetryResultSend.sendMessage(clientUtil.callProbing(service));
-      pollingResultSend.sendMessage(PollingDto.builder()
-          .eserviceRecordId(service.eserviceRecordId()).responseTime(OffsetDateTime.now()).build());
+      pollingResultSend
+          .sendMessage(PollingDto.builder().eserviceRecordId(service.eserviceRecordId())
+              .responseReceived(OffsetDateTime.now()).build());
 
     } catch (IOException e) {
       logger.logMessageException(e);

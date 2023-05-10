@@ -21,6 +21,10 @@
 		<awsspring.cloud.version>2.3.0</awsspring.cloud.version>
 		<aws.java.sdk.bom.version>1.12.414</aws.java.sdk.bom.version>
 		<javax.validation.api>2.0.1.Final</javax.validation.api>
+		<springfox.version>2.8.0</springfox.version>
+		<jackson.databind.version>0.2.1</jackson.databind.version>
+		<javax.activation.version>1.1</javax.activation.version>
+		<jakarta.xml.version>4.0.0</jakarta.xml.version>
 	</properties>
 	<organization>
 		<name>PagoPa</name>
@@ -116,12 +120,12 @@
 		<dependency>
 			<groupId>org.openapitools</groupId>
 			<artifactId>jackson-databind-nullable</artifactId>
-			<version>0.2.1</version>
+			<version>${jackson.databind.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>
-			<version>2.8.0</version>
+			<version>${springfox.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.validation</groupId>
@@ -142,7 +146,7 @@
 		<dependency>
 			<groupId>jakarta.xml.bind</groupId>
 			<artifactId>jakarta.xml.bind-api</artifactId>
-			<version>4.0.0</version><!--$NO-MVN-MAN-VER$ -->
+			<version>${jakarta.xml.version}</version><!--$NO-MVN-MAN-VER$ -->
 		</dependency>
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
@@ -163,7 +167,7 @@
 		<dependency>
 			<groupId>javax.activation</groupId>
 			<artifactId>activation</artifactId>
-			<version>1.1</version>
+			<version>${javax.activation.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jaxb</groupId>
