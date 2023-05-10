@@ -15,7 +15,6 @@ import it.pagopa.interop.probing.caller.dto.TelemetryDto;
 import it.pagopa.interop.probing.caller.dtos.Problem;
 import it.pagopa.interop.probing.caller.soap.probing.ObjectFactory;
 import it.pagopa.interop.probing.caller.soap.probing.ProbingResponse;
-import it.pagopa.interop.probing.caller.util.constant.ProjectConstants;
 import it.pagopa.interop.probing.caller.util.logging.Logger;
 
 @Component
@@ -49,7 +48,7 @@ public class ClientUtil {
 
     } catch (Exception e) {
       logger.logMessageException(e);
-      telemetryResult.status(EserviceStatus.KO).koReason(ProjectConstants.GENERIC_EXCEPTION);
+      telemetryResult.status(EserviceStatus.KO).koReason(e.getMessage());
     }
 
     logger.logMessageResponseCallProbing(telemetryResult);
@@ -72,8 +71,9 @@ public class ClientUtil {
     ProbingResponse response = soapClientConfig.feignSoapClient().probing(
         URI.create(Objects.nonNull(service.basePath()) ? service.basePath()[0] : null),
         o.createProbingRequest());
-
-    return receiverResponse(Integer.valueOf(response.getStatus()), telemetryResult, null, before);
+    logger.logResultCallProbing(Integer.valueOf(response.getStatus()), response.toString());
+    return receiverResponse(Integer.valueOf(response.getStatus()), telemetryResult,
+        response.getDescription(), before);
   }
 
   private TelemetryDto receiverResponse(int status, TelemetryDto telemetryResult, String koReason,

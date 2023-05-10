@@ -41,12 +41,11 @@ public class PollingReceiver {
     EserviceContentDto service = mapper.readValue(message, EserviceContentDto.class);
 
     try {
+
       telemetryResultSend.sendMessage(clientUtil.callProbing(service));
+      pollingResultSend.sendMessage(PollingDto.builder()
+          .eserviceRecordId(service.eserviceRecordId()).responseTime(OffsetDateTime.now()).build());
 
-      PollingDto polling = PollingDto.builder().eserviceRecordId(service.eserviceRecordId())
-          .responseTime(OffsetDateTime.now()).build();
-
-      pollingResultSend.sendMessage(polling);
     } catch (IOException e) {
       logger.logMessageException(e);
       throw e;

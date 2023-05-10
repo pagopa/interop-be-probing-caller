@@ -6,7 +6,6 @@ public class ProjectConstants {
     super();
   }
 
-  public static final String GENERIC_EXCEPTION = "Generic Exception";
   public static final String SQS_TELEMETRY_RESULT = "Telemetry-result-queue";
   public static final String SQS_POLLING_QUEUE = "Poll-result-queue";
   public static final String SERVICE_GROUP_ID = "services-group";

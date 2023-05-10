@@ -2,29 +2,24 @@
 package it.pagopa.interop.probing.caller.annotations.validator;
 
 import java.util.Objects;
+import java.util.stream.Stream;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import it.pagopa.interop.probing.caller.annotations.ValidateStringArraySize;
 
-public class StringArrayValidator implements ConstraintValidator<ValidateStringArraySize, String[]> {
+public class StringArrayValidator
+    implements ConstraintValidator<ValidateStringArraySize, String[]> {
 
-	private int maxSize;
+  int maxSize;
 
-	@Override
-	public void initialize(ValidateStringArraySize constraintAnnotation) {
-		maxSize = constraintAnnotation.maxSize();
-	}
+  @Override
+  public void initialize(ValidateStringArraySize constraintAnnotation) {
+    maxSize = constraintAnnotation.maxSize();
+  }
 
-	@Override
-	public boolean isValid(String[] array, ConstraintValidatorContext context) {
-		if (Objects.nonNull(array)) {
-			for (String s : array) {
-				if (s.length() > maxSize) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
+  @Override
+  public boolean isValid(String[] array, ConstraintValidatorContext context) {
+    return Objects.isNull(array) || Stream.of(array).noneMatch(s -> s.length() > maxSize);
+  }
 
 }
