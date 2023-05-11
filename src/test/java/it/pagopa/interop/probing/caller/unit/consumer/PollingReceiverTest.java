@@ -4,6 +4,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import java.io.IOException;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,13 +16,12 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.PropertySource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.messaging.listener.SimpleMessageListenerContainer;
 import it.pagopa.interop.probing.caller.consumer.PollingReceiver;
-import it.pagopa.interop.probing.caller.dto.EserviceContentDto;
-import it.pagopa.interop.probing.caller.dto.PollingDto;
-import it.pagopa.interop.probing.caller.dto.TelemetryDto;
+import it.pagopa.interop.probing.caller.dto.impl.EserviceContentDto;
+import it.pagopa.interop.probing.caller.dto.impl.PollingDto;
+import it.pagopa.interop.probing.caller.dto.impl.TelemetryDto;
 import it.pagopa.interop.probing.caller.producer.PollingResultSend;
 import it.pagopa.interop.probing.caller.producer.TelemetryResultSend;
 import it.pagopa.interop.probing.caller.util.ClientUtil;
@@ -31,7 +31,6 @@ import it.pagopa.interop.probing.caller.util.logging.Logger;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
-@PropertySource("classpath:application.properties")
 class PollingReceiverTest {
 
   @InjectMocks
@@ -71,14 +70,13 @@ class PollingReceiverTest {
         .technology(EserviceTechnology.REST).basePath(basePath).build();
     telemetryDto = TelemetryDto.builder().eserviceRecordId(1L).status(EserviceStatus.OK)
         .responseTime(12345L).koReason(null).checkTime("12345").build();
-    pollingDto =
-        PollingDto.builder().eserviceRecordId(1L).responseReceived(OffsetDateTime.now()).build();
+    pollingDto = PollingDto.builder().eserviceRecordId(1L)
+        .responseReceived(OffsetDateTime.now(ZoneOffset.UTC)).status(EserviceStatus.OK).build();
   }
-
 
   @Test
   @DisplayName("The receiverMessage method is tested.")
-  void testReceiverMessage() throws IOException {
+  void testReceiverMessage_whenGivenValidMessage_thenMessageIsSentToQueue() throws IOException {
 
     try (MockedStatic<PollingDto> pollingBuilder = mockStatic(PollingDto.class);) {
 
@@ -86,6 +84,7 @@ class PollingReceiverTest {
       Mockito.when(builderMock.eserviceRecordId(Mockito.anyLong())).thenReturn(builderMock);
       Mockito.when(builderMock.responseReceived(Mockito.any(OffsetDateTime.class)))
           .thenReturn(builderMock);
+      Mockito.when(builderMock.status(Mockito.any(EserviceStatus.class))).thenReturn(builderMock);
 
       Mockito.when(builderMock.build()).thenReturn(pollingDto);
 

@@ -16,7 +16,7 @@ import com.amazonaws.services.sqs.AmazonSQSAsync;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.messaging.listener.SimpleMessageListenerContainer;
-import it.pagopa.interop.probing.caller.dto.TelemetryDto;
+import it.pagopa.interop.probing.caller.dto.impl.TelemetryDto;
 import it.pagopa.interop.probing.caller.producer.TelemetryResultSend;
 import it.pagopa.interop.probing.caller.util.EserviceStatus;
 import it.pagopa.interop.probing.caller.util.logging.Logger;
@@ -53,7 +53,7 @@ class TelemetryResultSendTest {
 
   @Test
   @DisplayName("The sendMessage method of PollingResultSend class is tested.")
-  void testSendMessage() throws IOException {
+  void testSendMessage_whenGivenValidTelemetryDto_thenProducerWriteOnQueue() throws IOException {
 
     Mockito.when(amazonSQS.sendMessage(Mockito.any())).thenReturn(null);
     telemetryResultSend.sendMessage(telemetryDto);

@@ -10,7 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import io.awspring.cloud.messaging.listener.SimpleMessageListenerContainer;
-import it.pagopa.interop.probing.caller.dto.EserviceContentDto;
+import it.pagopa.interop.probing.caller.dto.impl.EserviceContentDto;
 import it.pagopa.interop.probing.caller.util.EserviceTechnology;
 
 

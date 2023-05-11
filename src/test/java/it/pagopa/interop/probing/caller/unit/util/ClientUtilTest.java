@@ -28,8 +28,8 @@ import it.pagopa.interop.probing.caller.client.FeignRestClient;
 import it.pagopa.interop.probing.caller.client.FeignSoapClient;
 import it.pagopa.interop.probing.caller.config.client.RestClientConfig;
 import it.pagopa.interop.probing.caller.config.client.SoapClientConfig;
-import it.pagopa.interop.probing.caller.dto.EserviceContentDto;
-import it.pagopa.interop.probing.caller.dto.TelemetryDto;
+import it.pagopa.interop.probing.caller.dto.impl.EserviceContentDto;
+import it.pagopa.interop.probing.caller.dto.impl.TelemetryDto;
 import it.pagopa.interop.probing.caller.soap.probing.ProbingRequest;
 import it.pagopa.interop.probing.caller.soap.probing.ProbingResponse;
 import it.pagopa.interop.probing.caller.util.ClientUtil;
@@ -86,7 +86,8 @@ class ClientUtilTest {
 
   @Test
   @DisplayName("Test call probing - rest")
-  void testCallProbingWithRestService() throws IOException {
+  void testCallProbing_whenGivenEserviceWithRestTechnology_thenCallRestService()
+      throws IOException {
 
     String body = getStringFromResourse(bodyContent);
     Request.Body requestBody = Request.Body.create(body, Charset.forName("UTF-8"));
@@ -117,7 +118,8 @@ class ClientUtilTest {
 
   @Test
   @DisplayName("Test OK call probing - soap")
-  void testCallProbingWithSoapServiceOK() throws Exception {
+  void testCallProbing_whenGivenEserviceWithRestTechnology_thenCallSoapServiceWithReturnOK()
+      throws Exception {
 
     ProbingResponse soapResponse = new ProbingResponse();
     soapResponse.setStatus("200");
@@ -136,7 +138,8 @@ class ClientUtilTest {
 
   @Test
   @DisplayName("Test KO call probing - soap")
-  void testCallProbingWithSoapServiceKO() throws Exception {
+  void testCallProbing_whenGivenEserviceWithRestTechnology_thenCallSoapServiceWithReturnKO()
+      throws Exception {
 
     ProbingResponse soapResponse = new ProbingResponse();
     soapResponse.setStatus("500");

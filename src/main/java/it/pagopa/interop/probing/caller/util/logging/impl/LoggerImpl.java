@@ -2,7 +2,7 @@ package it.pagopa.interop.probing.caller.util.logging.impl;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.stereotype.Component;
-import it.pagopa.interop.probing.caller.dto.TelemetryDto;
+import it.pagopa.interop.probing.caller.dto.impl.TelemetryDto;
 import it.pagopa.interop.probing.caller.util.logging.Logger;
 import lombok.extern.slf4j.Slf4j;
 

@@ -17,7 +17,7 @@ import com.amazonaws.services.sqs.AmazonSQSAsync;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.messaging.listener.SimpleMessageListenerContainer;
-import it.pagopa.interop.probing.caller.dto.PollingDto;
+import it.pagopa.interop.probing.caller.dto.impl.PollingDto;
 import it.pagopa.interop.probing.caller.producer.PollingResultSend;
 import it.pagopa.interop.probing.caller.util.logging.Logger;
 
@@ -50,10 +50,9 @@ class PollingResultSendTest {
         PollingDto.builder().eserviceRecordId(1L).responseReceived(OffsetDateTime.now()).build();
   }
 
-
   @Test
   @DisplayName("The sendMessage method of PollingResultSend class is tested.")
-  void testSendMessage() throws IOException {
+  void testSendMessage_whenGivenValidPollingDto_thenProducerWriteOnQueue() throws IOException {
 
     Mockito.when(amazonSQS.sendMessage(Mockito.any())).thenReturn(null);
     pollingResultSend.sendMessage(pollingDto);
