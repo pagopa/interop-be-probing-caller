@@ -31,9 +31,9 @@ public class LoggerImpl implements Logger {
     log.info("Result: {}", telemetry.toString());
   }
 
-  public void logMessagePushedToQueue(long eserviceRecordId, String queueName) {
+  public void logMessagePushedToQueue(long eserviceRecordId, String queueLabel) {
     log.info("Service with record id {} has been published in SQS {} queue: ", eserviceRecordId,
-        queueName);
+        queueLabel);
   }
 
   @Override

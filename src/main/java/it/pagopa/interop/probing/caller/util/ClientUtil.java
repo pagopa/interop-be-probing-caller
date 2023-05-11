@@ -35,14 +35,12 @@ public class ClientUtil {
 
     logger.logMessageCallProbing(service.technology().getValue(), service.basePath()[0]);
 
-    long before = System.currentTimeMillis();
-    telemetryResult.checkTime(String.valueOf(before));
     try {
 
       if (service.technology().equals(EserviceTechnology.REST)) {
-        telemetryResult = callRest(telemetryResult, service, before);
+        telemetryResult = callRest(telemetryResult, service);
       } else {
-        telemetryResult = callSoap(telemetryResult, service, before);
+        telemetryResult = callSoap(telemetryResult, service);
       }
 
     } catch (Exception e) {
@@ -55,29 +53,32 @@ public class ClientUtil {
     return telemetryResult;
   }
 
-  private TelemetryDto callRest(TelemetryDto telemetryResult, EserviceContentDto service,
-      long before) throws IOException {
+  private TelemetryDto callRest(TelemetryDto telemetryResult, EserviceContentDto service)
+      throws IOException {
+    long before = System.currentTimeMillis();
     Response response =
         restClientConfig.feignRestClient().probing(URI.create(service.basePath()[0]));
     long elapsedTime = System.currentTimeMillis() - before;
     Problem problem = new ObjectMapper().readValue(response.body().toString(), Problem.class);
     logger.logResultCallProbing(response.status(), response.body().toString());
-    return receiverResponse(response.status(), telemetryResult, problem.getDetail(), elapsedTime);
+    return receiverResponse(response.status(), telemetryResult, problem.getDetail(), elapsedTime,
+        before);
   }
 
-  private TelemetryDto callSoap(TelemetryDto telemetryResult, EserviceContentDto service,
-      long before) {
+  private TelemetryDto callSoap(TelemetryDto telemetryResult, EserviceContentDto service) {
     ObjectFactory o = new ObjectFactory();
+    long before = System.currentTimeMillis();
     ProbingResponse response = soapClientConfig.feignSoapClient()
         .probing(URI.create(service.basePath()[0]), o.createProbingRequest());
     long elapsedTime = System.currentTimeMillis() - before;
     logger.logResultCallProbing(Integer.valueOf(response.getStatus()), response.toString());
     return receiverResponse(Integer.valueOf(response.getStatus()), telemetryResult,
-        response.getDescription(), elapsedTime);
+        response.getDescription(), elapsedTime, before);
   }
 
   private TelemetryDto receiverResponse(int status, TelemetryDto telemetryResult, String koReason,
-      long elapsedTime) {
+      long elapsedTime, long before) {
+    telemetryResult.checkTime(String.valueOf(before));
     if (HttpStatus.valueOf(status).is2xxSuccessful()) {
       return telemetryResult.status(EserviceStatus.OK).responseTime(elapsedTime);
     } else {

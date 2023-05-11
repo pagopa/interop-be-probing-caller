@@ -6,7 +6,7 @@ public interface Logger {
 
   void logMessageReceiver(Long id);
 
-  void logMessagePushedToQueue(long eserviceRecordId, String queueName);
+  void logMessagePushedToQueue(long eserviceRecordId, String queueLabel);
 
   void logMessageException(Exception exception);
 

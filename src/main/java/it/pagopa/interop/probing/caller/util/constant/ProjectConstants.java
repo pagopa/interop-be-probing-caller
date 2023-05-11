@@ -6,7 +6,7 @@ public class ProjectConstants {
     super();
   }
 
-  public static final String SQS_TELEMETRY_RESULT = "Telemetry result";
-  public static final String SQS_POLLING_QUEUE = "Polling result";
+  public static final String SQS_TELEMETRY_LOG_LABEL = "Telemetry result";
+  public static final String SQS_POLLING_LOG_LABEL = "Polling result";
 
 }
