@@ -8,6 +8,7 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.interop.probing.caller.dto.TelemetryDto;
+import it.pagopa.interop.probing.caller.util.constant.ProjectConstants;
 import it.pagopa.interop.probing.caller.util.logging.Logger;
 
 
@@ -31,6 +32,7 @@ public class TelemetryResultSend {
     SendMessageRequest sendMessageRequest = new SendMessageRequest().withQueueUrl(sqsUrl)
         .withMessageBody(objectMapper.writeValueAsString(service));
     amazonSQS.sendMessage(sendMessageRequest);
-    logger.logMessageTelemetrySend(service.getEserviceRecordId());
+    logger.logMessagePushedToQueue(service.eserviceRecordId(),
+        ProjectConstants.SQS_TELEMETRY_LOG_LABEL);
   }
 }
