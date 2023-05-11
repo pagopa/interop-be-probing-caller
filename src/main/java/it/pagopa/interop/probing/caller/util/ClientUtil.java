@@ -2,7 +2,6 @@ package it.pagopa.interop.probing.caller.util;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -58,28 +57,28 @@ public class ClientUtil {
 
   private TelemetryDto callRest(TelemetryDto telemetryResult, EserviceContentDto service,
       long before) throws IOException {
-    Response response = restClientConfig.feignRestClient()
-        .probing(URI.create(Objects.nonNull(service.basePath()) ? service.basePath()[0] : null));
+    Response response =
+        restClientConfig.feignRestClient().probing(URI.create(service.basePath()[0]));
+    long elapsedTime = System.currentTimeMillis() - before;
     Problem problem = new ObjectMapper().readValue(response.body().toString(), Problem.class);
     logger.logResultCallProbing(response.status(), response.body().toString());
-    return receiverResponse(response.status(), telemetryResult, problem.getDetail(), before);
+    return receiverResponse(response.status(), telemetryResult, problem.getDetail(), elapsedTime);
   }
 
   private TelemetryDto callSoap(TelemetryDto telemetryResult, EserviceContentDto service,
       long before) {
     ObjectFactory o = new ObjectFactory();
-    ProbingResponse response = soapClientConfig.feignSoapClient().probing(
-        URI.create(Objects.nonNull(service.basePath()) ? service.basePath()[0] : null),
-        o.createProbingRequest());
+    ProbingResponse response = soapClientConfig.feignSoapClient()
+        .probing(URI.create(service.basePath()[0]), o.createProbingRequest());
+    long elapsedTime = System.currentTimeMillis() - before;
     logger.logResultCallProbing(Integer.valueOf(response.getStatus()), response.toString());
     return receiverResponse(Integer.valueOf(response.getStatus()), telemetryResult,
-        response.getDescription(), before);
+        response.getDescription(), elapsedTime);
   }
 
   private TelemetryDto receiverResponse(int status, TelemetryDto telemetryResult, String koReason,
-      long before) {
+      long elapsedTime) {
     if (HttpStatus.valueOf(status).is2xxSuccessful()) {
-      long elapsedTime = System.currentTimeMillis() - before;
       return telemetryResult.status(EserviceStatus.OK).responseTime(elapsedTime);
     } else {
       return telemetryResult.status(EserviceStatus.KO).koReason(koReason);

@@ -23,9 +23,7 @@ tags:
 paths:
    '/interop/probing/v1':
     get:
-      summary: Monitoring the status of an e-services
-      description: >-
-        Checks an e-service status
+      summary: Provides the status of the E-Service
       tags:
         - InteropProbing
       operationId: getEserviceStatus

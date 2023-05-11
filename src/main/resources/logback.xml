@@ -41,8 +41,6 @@
 	<logger name="com.amazonaws" level="WARN" />
 	<logger name="io.awspring.cloud" level="WARN" />
 	<logger name="org.projectlombok" level="WARN" />
-	<logger name="org.junit.jupiter" level="WARN" />
-	<logger name="org.mockito" level="WARN" />
 	<logger name="org.apache.commons" level="WARN" />
 	<logger name="org.slf4j" level="WARN" />
 	<logger name="org.springframework.cloud" level="WARN" />

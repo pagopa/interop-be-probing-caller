@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import it.pagopa.interop.probing.caller.util.EserviceStatus;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -21,5 +22,9 @@ public class PollingDto {
   @JsonProperty("responseTime")
   @NotNull(message = "must not be null")
   private OffsetDateTime responseReceived;
+
+  @JsonProperty("status")
+  @NotNull(message = "must not be null")
+  private EserviceStatus status;
 
 }

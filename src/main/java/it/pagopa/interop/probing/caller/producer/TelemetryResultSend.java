@@ -33,6 +33,6 @@ public class TelemetryResultSend {
         .withMessageBody(objectMapper.writeValueAsString(service));
     amazonSQS.sendMessage(sendMessageRequest);
     logger.logMessagePushedToQueue(service.eserviceRecordId(),
-        ProjectConstants.SQS_TELEMETRY_RESULT, ProjectConstants.SERVICE_GROUP_ID);
+        ProjectConstants.SQS_TELEMETRY_RESULT);
   }
 }
