@@ -85,8 +85,8 @@ class ClientUtilTest {
   }
 
   @Test
-  @DisplayName("Test call probing - rest")
-  void testCallProbing_whenGivenEserviceWithRestTechnology_thenCallRestService()
+  @DisplayName("Test OK call probing - REST")
+  void testCallProbing_whenGivenEserviceWithRestTechnology_thenCallRestServiceWithReturnOK()
       throws IOException {
 
     String body = getStringFromResourse(bodyContent);
@@ -116,8 +116,40 @@ class ClientUtilTest {
 
   }
 
+
   @Test
-  @DisplayName("Test OK call probing - soap")
+  @DisplayName("Test KO call probing - REST")
+  void testCallProbing_whenGivenEserviceWithRestTechnology_thenCallRestServiceWithReturnKO()
+      throws IOException {
+
+    String body = getStringFromResourse(bodyContent);
+    Request.Body requestBody = Request.Body.create(body, Charset.forName("UTF-8"));
+
+    RequestTemplate requestTemplate = new RequestTemplate();
+    requestTemplate.method(Request.HttpMethod.POST);
+    requestTemplate.uri("/api/users");
+    requestTemplate.headers(new HashMap<>());
+    requestTemplate.bodyTemplate("${body}");
+
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("body", requestBody);
+
+    Request request = requestTemplate.resolve(variables).request();
+
+    Response response = Response.builder().request(request).status(500).reason("KO")
+        .body("{\"status\":\"500\"}", Charset.defaultCharset()).build();
+
+    Mockito.when(restClientConfig.feignRestClient()).thenReturn(feignRestClient);
+    Mockito.when(feignRestClient.probing(Mockito.any(URI.class))).thenReturn(response);
+
+    TelemetryDto telemetryResult = clientUtil.callProbing(eserviceContentRestDto);
+    assertEquals(telemetryDtoKO.eserviceRecordId(), telemetryResult.eserviceRecordId());
+    assertEquals(telemetryDtoKO.status(), telemetryResult.status());
+
+  }
+
+  @Test
+  @DisplayName("Test OK call probing - SOAP")
   void testCallProbing_whenGivenEserviceWithRestTechnology_thenCallSoapServiceWithReturnOK()
       throws Exception {
 
@@ -137,7 +169,7 @@ class ClientUtilTest {
 
 
   @Test
-  @DisplayName("Test KO call probing - soap")
+  @DisplayName("Test KO call probing - SOAP")
   void testCallProbing_whenGivenEserviceWithRestTechnology_thenCallSoapServiceWithReturnKO()
       throws Exception {
 

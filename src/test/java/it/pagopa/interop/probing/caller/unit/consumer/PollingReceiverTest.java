@@ -75,7 +75,7 @@ class PollingReceiverTest {
   }
 
   @Test
-  @DisplayName("The receiverMessage method is tested.")
+  @DisplayName("Reads the message from the queue and pushes it to the polling and telemetry queues.")
   void testReceiverMessage_whenGivenValidMessage_thenMessageIsSentToQueue() throws IOException {
 
     try (MockedStatic<PollingDto> pollingBuilder = mockStatic(PollingDto.class);) {

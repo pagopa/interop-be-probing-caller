@@ -52,7 +52,7 @@ class TelemetryResultSendTest {
 
 
   @Test
-  @DisplayName("The sendMessage method of PollingResultSend class is tested.")
+  @DisplayName("Sent message on the telemetry queue.")
   void testSendMessage_whenGivenValidTelemetryDto_thenProducerWriteOnQueue() throws IOException {
 
     Mockito.when(amazonSQS.sendMessage(Mockito.any())).thenReturn(null);

@@ -51,7 +51,7 @@ class PollingResultSendTest {
   }
 
   @Test
-  @DisplayName("The sendMessage method of PollingResultSend class is tested.")
+  @DisplayName("Sent message on the polling queue.")
   void testSendMessage_whenGivenValidPollingDto_thenProducerWriteOnQueue() throws IOException {
 
     Mockito.when(amazonSQS.sendMessage(Mockito.any())).thenReturn(null);
