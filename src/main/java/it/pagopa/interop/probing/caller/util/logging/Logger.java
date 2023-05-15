@@ -1,6 +1,6 @@
 package it.pagopa.interop.probing.caller.util.logging;
 
-import it.pagopa.interop.probing.caller.dto.TelemetryDto;
+import it.pagopa.interop.probing.caller.dto.impl.TelemetryDto;
 
 public interface Logger {
 

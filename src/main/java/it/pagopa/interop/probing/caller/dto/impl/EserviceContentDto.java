@@ -1,10 +1,11 @@
-package it.pagopa.interop.probing.caller.dto;
+package it.pagopa.interop.probing.caller.dto.impl;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.pagopa.interop.probing.caller.annotations.ValidateStringArraySize;
+import it.pagopa.interop.probing.caller.dto.Dto;
 import it.pagopa.interop.probing.caller.util.EserviceTechnology;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +18,10 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true, fluent = true)
-public class EserviceContentDto {
+public class EserviceContentDto implements Dto {
+
+
+  private static final long serialVersionUID = 1L;
 
   @JsonProperty("eserviceRecordId")
   @NotNull(message = "must not be null")
