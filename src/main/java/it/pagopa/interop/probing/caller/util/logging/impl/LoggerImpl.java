@@ -22,8 +22,9 @@ public class LoggerImpl implements Logger {
   }
 
   @Override
-  public void logResultCallProbing(int code, String body) {
-    log.info("Probing response received, code={}, body={}", code, body);
+  public void logResultCallProbing(int code, String body, long elapsedTime) {
+    log.info("Probing response received, code={}, body={}, elapsedTime={}", code, body,
+        elapsedTime);
   }
 
   @Override

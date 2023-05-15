@@ -12,7 +12,7 @@ public interface Logger {
 
   void logMessageCallProbing(String technology, String url);
 
-  void logResultCallProbing(int code, String body);
+  void logResultCallProbing(int code, String body, long elapsedTime);
 
   void logMessageResponseCallProbing(TelemetryDto telemetry);
 

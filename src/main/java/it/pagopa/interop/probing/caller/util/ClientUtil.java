@@ -2,6 +2,7 @@ package it.pagopa.interop.probing.caller.util;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -53,16 +54,16 @@ public class ClientUtil {
     return telemetryResult;
   }
 
+
   private TelemetryDto callRest(TelemetryDto telemetryResult, EserviceContentDto service)
       throws IOException {
     long before = System.currentTimeMillis();
     Response response =
         restClientConfig.feignRestClient().probing(URI.create(service.basePath()[0]));
     long elapsedTime = System.currentTimeMillis() - before;
-    Problem problem = new ObjectMapper().readValue(response.body().toString(), Problem.class);
-    logger.logResultCallProbing(response.status(), response.body().toString());
-    return receiverResponse(response.status(), telemetryResult, problem.getDetail(), elapsedTime,
-        before);
+    logger.logResultCallProbing(response.status(), response.toString(), elapsedTime);
+    return receiverResponse(response.status(), telemetryResult, decodeReason(response, elapsedTime),
+        elapsedTime, before);
   }
 
   private TelemetryDto callSoap(TelemetryDto telemetryResult, EserviceContentDto service) {
@@ -71,7 +72,8 @@ public class ClientUtil {
     ProbingResponse response = soapClientConfig.feignSoapClient()
         .probing(URI.create(service.basePath()[0]), o.createProbingRequest());
     long elapsedTime = System.currentTimeMillis() - before;
-    logger.logResultCallProbing(Integer.valueOf(response.getStatus()), response.toString());
+    logger.logResultCallProbing(Integer.valueOf(response.getStatus()), response.toString(),
+        elapsedTime);
     return receiverResponse(Integer.valueOf(response.getStatus()), telemetryResult,
         response.getDescription(), elapsedTime, before);
   }
@@ -84,5 +86,23 @@ public class ClientUtil {
     } else {
       return telemetryResult.status(EserviceStatus.KO).koReason(koReason);
     }
+  }
+
+  private String decodeReason(Response response, long elapsedTime) throws IOException {
+    HttpStatus status = HttpStatus.valueOf(response.status());
+    String reason = null;
+    if (status.is4xxClientError() || status.is3xxRedirection()) {
+      reason = response.reason();
+      logger.logResultCallProbing(response.status(), reason, elapsedTime);
+    }
+
+
+    if (HttpStatus.valueOf(response.status()).is5xxServerError()) {
+      Problem problem = new ObjectMapper()
+          .readValue(response.body().asReader(StandardCharsets.UTF_8), Problem.class);
+      reason = problem.getDetail();
+      logger.logResultCallProbing(response.status(), problem.toString(), elapsedTime);
+    }
+    return reason;
   }
 }

@@ -1,6 +1,8 @@
 package it.pagopa.interop.probing.caller.dto.impl;
 
 import java.time.OffsetDateTime;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -28,6 +30,7 @@ public class PollingDto implements Dto {
 
   @JsonProperty("status")
   @NotNull(message = "must not be null")
+  @Enumerated(EnumType.STRING)
   private EserviceStatus status;
 
 }
