@@ -54,14 +54,12 @@ public class ClientUtil {
     return telemetryResult;
   }
 
-
   private TelemetryDto callRest(TelemetryDto telemetryResult, EserviceContentDto service)
       throws IOException {
     long before = System.currentTimeMillis();
     Response response =
         restClientConfig.feignRestClient().probing(URI.create(service.basePath()[0]));
     long elapsedTime = System.currentTimeMillis() - before;
-    logger.logResultCallProbing(response.status(), response.toString(), elapsedTime);
     return receiverResponse(response.status(), telemetryResult, decodeReason(response, elapsedTime),
         elapsedTime, before);
   }
@@ -95,8 +93,6 @@ public class ClientUtil {
       reason = response.reason();
       logger.logResultCallProbing(response.status(), reason, elapsedTime);
     }
-
-
     if (HttpStatus.valueOf(response.status()).is5xxServerError()) {
       Problem problem = new ObjectMapper()
           .readValue(response.body().asReader(StandardCharsets.UTF_8), Problem.class);
@@ -105,4 +101,5 @@ public class ClientUtil {
     }
     return reason;
   }
+
 }
