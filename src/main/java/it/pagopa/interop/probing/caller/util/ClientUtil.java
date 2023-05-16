@@ -48,37 +48,36 @@ public class ClientUtil {
       logger.logMessageException(e);
       telemetryResult.status(EserviceStatus.KO).koReason(e.getMessage());
     }
-
     logger.logMessageResponseCallProbing(telemetryResult);
-
     return telemetryResult;
   }
 
   private TelemetryDto callRest(TelemetryDto telemetryResult, EserviceContentDto service)
       throws IOException {
     long before = System.currentTimeMillis();
+    telemetryResult.checkTime(String.valueOf(before));
     Response response =
         restClientConfig.feignRestClient().probing(URI.create(service.basePath()[0]));
     long elapsedTime = System.currentTimeMillis() - before;
     return receiverResponse(response.status(), telemetryResult, decodeReason(response, elapsedTime),
-        elapsedTime, before);
+        elapsedTime);
   }
 
   private TelemetryDto callSoap(TelemetryDto telemetryResult, EserviceContentDto service) {
     ObjectFactory o = new ObjectFactory();
     long before = System.currentTimeMillis();
+    telemetryResult.checkTime(String.valueOf(before));
     ProbingResponse response = soapClientConfig.feignSoapClient()
         .probing(URI.create(service.basePath()[0]), o.createProbingRequest());
     long elapsedTime = System.currentTimeMillis() - before;
     logger.logResultCallProbing(Integer.valueOf(response.getStatus()), response.toString(),
         elapsedTime);
     return receiverResponse(Integer.valueOf(response.getStatus()), telemetryResult,
-        response.getDescription(), elapsedTime, before);
+        response.getDescription(), elapsedTime);
   }
 
   private TelemetryDto receiverResponse(int status, TelemetryDto telemetryResult, String koReason,
-      long elapsedTime, long before) {
-    telemetryResult.checkTime(String.valueOf(before));
+      long elapsedTime) {
     if (HttpStatus.valueOf(status).is2xxSuccessful()) {
       return telemetryResult.status(EserviceStatus.OK).responseTime(elapsedTime);
     } else {
