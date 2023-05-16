@@ -24,7 +24,7 @@ public class PollingDto implements Dto {
   @Min(value = 1, message = "must be at least 1")
   private Long eserviceRecordId;
 
-  @JsonProperty("responseTime")
+  @JsonProperty("responseReceived")
   @NotNull(message = "must not be null")
   private OffsetDateTime responseReceived;
 
