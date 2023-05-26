@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="false">
 
-	<appender name="STDOUT"
-		class="ch.qos.logback.core.ConsoleAppender">
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<filter class="ch.qos.logback.classic.filter.LevelFilter">
 			<level>ERROR</level>
 			<onMatch>DENY</onMatch>
@@ -11,7 +10,7 @@
 			<pattern>%d{YYYY-MM-dd HH:mm:ss:SSS} %(%-5level) [%(%logger{20})] %X{trace_id} - %msg %n</pattern>
 		</encoder>
 	</appender>
-
+	
 	<appender name="STDERR"
 		class="ch.qos.logback.core.ConsoleAppender">
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -54,6 +53,8 @@
 	<logger name="com.squareup.okhttp3" level="WARN" />
 	<logger name="javax.activation" level="WARN" />
 	<logger name="org.glassfish.jaxb" level="WARN" />
+
+	<logger name="feign.Logger" level="DEBUG" />
 
 	<logger name="it.pagopa.interop.probing.caller" level="INFO" />
 

@@ -37,5 +37,9 @@ public class EserviceContentDto implements Dto {
   @ValidateStringArraySize(maxSize = 2048)
   private String[] basePath;
 
+  @JsonProperty("audience")
+  @NotEmpty(message = "list cannot be empty")
+  @ValidateStringArraySize(maxSize = 2048)
+  private String[] audience;
 
 }
