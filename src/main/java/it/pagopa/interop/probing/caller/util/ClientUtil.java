@@ -93,13 +93,15 @@ public class ClientUtil {
     HttpStatus status = HttpStatus.valueOf(response.status());
     String reason = null;
     if (status.is4xxClientError() || status.is3xxRedirection()) {
-      reason = response.status() + " - " + response.reason();
+      reason = response.reason() != null && response.reason().isEmpty() ? response.reason()
+          : String.valueOf(response.status());
       logger.logResultCallProbing(response.status(), reason, elapsedTime);
     }
     if (HttpStatus.valueOf(response.status()).is5xxServerError()) {
       Problem problem = new ObjectMapper()
           .readValue(response.body().asReader(StandardCharsets.UTF_8), Problem.class);
-      reason = response.status() + " - " + problem.getDetail();
+      reason = problem.getDetail() != null && problem.getDetail().isEmpty() ? problem.getDetail()
+          : String.valueOf(response.status());
       logger.logResultCallProbing(response.status(), problem.toString(), elapsedTime);
     }
     return reason;
