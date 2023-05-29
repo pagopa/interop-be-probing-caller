@@ -67,12 +67,14 @@ public class JwtBuilder {
   }
 
   private Payload createPayload(String[] audience) {
-    long currentTimeInSecond = System.currentTimeMillis() / 1000;
+
+    long currentTimeInMillis = System.currentTimeMillis();
+    long currentTimeInSecond = currentTimeInMillis / 1000;
 
     JWTClaimsSet claims = new JWTClaimsSet.Builder().claim("aud", audience).claim("sub", subject)
         .claim("nbf", currentTimeInSecond).claim("iss", issuer)
-        .claim("exp", DateTime.now().plusSeconds(exp).toDate()).claim("iat", currentTimeInSecond)
-        .claim("jti", UUID.randomUUID()).build();
+        .claim("exp", new DateTime(currentTimeInMillis).plusSeconds(exp).toDate())
+        .claim("iat", currentTimeInSecond).claim("jti", UUID.randomUUID()).build();
 
     return new Payload(claims.toJSONObject());
   }

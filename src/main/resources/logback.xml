@@ -54,7 +54,7 @@
 	<logger name="javax.activation" level="WARN" />
 	<logger name="org.glassfish.jaxb" level="WARN" />
 
-	<logger name="feign.Logger" level="DEBUG" />
+	<logger name="feign.Logger" level="WARN" />
 
 	<logger name="it.pagopa.interop.probing.caller" level="INFO" />
 
