@@ -10,12 +10,12 @@ import org.springframework.context.annotation.Configuration;
 import com.amazonaws.services.kms.AWSKMS;
 import com.amazonaws.services.kms.model.SignRequest;
 import com.amazonaws.services.kms.model.SignResult;
-import com.amazonaws.services.kms.model.SigningAlgorithmSpec;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.shaded.json.JSONObject;
 import com.nimbusds.jwt.JWTClaimsSet;
+import it.pagopa.interop.probing.caller.util.constant.ProjectConstants;
 
 @Configuration
 public class JwtBuilder {
@@ -39,7 +39,7 @@ public class JwtBuilder {
 
     String token = createToken(audience);
     SignRequest signReq = new SignRequest().withKeyId(kid)
-        .withSigningAlgorithm(SigningAlgorithmSpec.RSASSA_PKCS1_V1_5_SHA_256)
+        .withSigningAlgorithm(ProjectConstants.JWT_SIGNING_ALGORITHM)
         .withMessage(ByteBuffer.wrap(token.getBytes()));
 
     SignResult signResult = kms.sign(signReq);
@@ -59,7 +59,7 @@ public class JwtBuilder {
     JSONObject obj = new JSONObject();
     obj.put("typ", "at+jwt");
     obj.put("use", "sig");
-    obj.put("alg", SigningAlgorithmSpec.RSASSA_PKCS1_V1_5_SHA_256);
+    obj.put("alg", ProjectConstants.JWT_SIGNING_ALGORITHM);
     obj.put("kid", kid);
 
     return new JWSHeader.Builder(JWSAlgorithm.RS256).contentType("text/plain").customParams(obj)
@@ -67,12 +67,12 @@ public class JwtBuilder {
   }
 
   private Payload createPayload(String[] audience) {
-
+    long currentTimeInSecond = System.currentTimeMillis() / 1000;
 
     JWTClaimsSet claims = new JWTClaimsSet.Builder().claim("aud", audience).claim("sub", subject)
-        .claim("nbf", System.currentTimeMillis() / 1000).claim("iss", issuer)
-        .claim("exp", DateTime.now().plusSeconds(exp).toDate())
-        .claim("iat", System.currentTimeMillis() / 1000).claim("jti", UUID.randomUUID()).build();
+        .claim("nbf", currentTimeInSecond).claim("iss", issuer)
+        .claim("exp", DateTime.now().plusSeconds(exp).toDate()).claim("iat", currentTimeInSecond)
+        .claim("jti", UUID.randomUUID()).build();
 
     return new Payload(claims.toJSONObject());
   }
