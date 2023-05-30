@@ -65,9 +65,10 @@ class PollingReceiverTest {
   @BeforeEach
   void setup() {
 
+    String[] audience = {"aud1", "aud2"};
     String[] basePath = {"basePath1", "basePath2"};
     eserviceContentDto = EserviceContentDto.builder().eserviceRecordId(1L)
-        .technology(EserviceTechnology.REST).basePath(basePath).build();
+        .technology(EserviceTechnology.REST).basePath(basePath).audience(audience).build();
     telemetryDto = TelemetryDto.builder().eserviceRecordId(1L).status(EserviceStatus.OK)
         .responseTime(12345L).koReason(null).checkTime("12345").build();
     pollingDto = PollingDto.builder().eserviceRecordId(1L)
@@ -89,7 +90,7 @@ class PollingReceiverTest {
       Mockito.when(builderMock.build()).thenReturn(pollingDto);
 
       String message =
-          "{\"eserviceRecordId\":1,\"technology\":\"REST\",\"basePath\":[\"path1\",\"path2\"]}";
+          "{\"eserviceRecordId\":1,\"technology\":\"REST\",\"basePath\":[\"path1\",\"path2\"],\"audience\":[\"aud1\",\"path2\"]}";
 
       Mockito.when(mapper.readValue(message, EserviceContentDto.class))
           .thenReturn(eserviceContentDto);

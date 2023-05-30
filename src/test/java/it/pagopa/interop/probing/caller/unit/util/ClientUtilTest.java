@@ -28,6 +28,7 @@ import it.pagopa.interop.probing.caller.client.FeignRestClient;
 import it.pagopa.interop.probing.caller.client.FeignSoapClient;
 import it.pagopa.interop.probing.caller.config.client.RestClientConfig;
 import it.pagopa.interop.probing.caller.config.client.SoapClientConfig;
+import it.pagopa.interop.probing.caller.config.kms.security.JwtBuilder;
 import it.pagopa.interop.probing.caller.dto.impl.EserviceContentDto;
 import it.pagopa.interop.probing.caller.dto.impl.TelemetryDto;
 import it.pagopa.interop.probing.caller.soap.probing.ProbingRequest;
@@ -54,6 +55,9 @@ class ClientUtilTest {
   FeignSoapClient feignSoapClient;
 
   @Mock
+  JwtBuilder jwtBuilder;
+
+  @Mock
   private Logger logger;
 
   @MockBean
@@ -73,11 +77,12 @@ class ClientUtilTest {
   @BeforeEach
   void setup() {
 
+    String[] audience = {"aud1", "aud2"};
     String[] basePath = {"basePath1", "basePath2"};
     eserviceContentRestDto = EserviceContentDto.builder().eserviceRecordId(1L)
-        .technology(EserviceTechnology.REST).basePath(basePath).build();
+        .technology(EserviceTechnology.REST).basePath(basePath).audience(audience).build();
     eserviceContentSoapDto = EserviceContentDto.builder().eserviceRecordId(1L)
-        .technology(EserviceTechnology.SOAP).basePath(basePath).build();
+        .technology(EserviceTechnology.SOAP).basePath(basePath).audience(audience).build();
     telemetryDto = TelemetryDto.builder().eserviceRecordId(1L).status(EserviceStatus.OK)
         .responseTime(12345L).koReason(null).checkTime("12345").build();
     telemetryDtoKO = TelemetryDto.builder().eserviceRecordId(1L).status(EserviceStatus.KO)
@@ -106,8 +111,10 @@ class ClientUtilTest {
     Response response = Response.builder().request(request).status(200).reason("OK")
         .body("{\"status\":\"200\"}", Charset.defaultCharset()).build();
 
+    Mockito.when(jwtBuilder.buildJWT(eserviceContentRestDto.audience())).thenReturn(new String());
     Mockito.when(restClientConfig.feignRestClient()).thenReturn(feignRestClient);
-    Mockito.when(feignRestClient.probing(Mockito.any(URI.class))).thenReturn(response);
+    Mockito.when(feignRestClient.probing(Mockito.any(URI.class), Mockito.anyString()))
+        .thenReturn(response);
 
     TelemetryDto telemetryResult = clientUtil.callProbing(eserviceContentRestDto);
     assertEquals(telemetryDto.eserviceRecordId(), telemetryResult.eserviceRecordId());
@@ -139,8 +146,11 @@ class ClientUtilTest {
     Response response = Response.builder().request(request).status(500).reason("KO")
         .body("{\"status\":\"500\"}", Charset.defaultCharset()).build();
 
+    Mockito.when(jwtBuilder.buildJWT(eserviceContentRestDto.audience())).thenReturn(new String());
+
     Mockito.when(restClientConfig.feignRestClient()).thenReturn(feignRestClient);
-    Mockito.when(feignRestClient.probing(Mockito.any(URI.class))).thenReturn(response);
+    Mockito.when(feignRestClient.probing(Mockito.any(URI.class), Mockito.anyString()))
+        .thenReturn(response);
 
     TelemetryDto telemetryResult = clientUtil.callProbing(eserviceContentRestDto);
     assertEquals(telemetryDtoKO.eserviceRecordId(), telemetryResult.eserviceRecordId());
@@ -156,9 +166,10 @@ class ClientUtilTest {
     ProbingResponse soapResponse = new ProbingResponse();
     soapResponse.setStatus("200");
 
+    Mockito.when(jwtBuilder.buildJWT(eserviceContentSoapDto.audience())).thenReturn(new String());
     Mockito.when(soapClientConfig.feignSoapClient()).thenReturn(feignSoapClient);
-    Mockito.when(feignSoapClient.probing(Mockito.any(URI.class), Mockito.any(ProbingRequest.class)))
-        .thenReturn(soapResponse);
+    Mockito.when(feignSoapClient.probing(Mockito.any(URI.class), Mockito.any(ProbingRequest.class),
+        Mockito.anyString())).thenReturn(soapResponse);
 
     TelemetryDto telemetryResult = clientUtil.callProbing(eserviceContentSoapDto);
 
@@ -176,9 +187,10 @@ class ClientUtilTest {
     ProbingResponse soapResponse = new ProbingResponse();
     soapResponse.setStatus("500");
 
+    Mockito.when(jwtBuilder.buildJWT(eserviceContentSoapDto.audience())).thenReturn(new String());
     Mockito.when(soapClientConfig.feignSoapClient()).thenReturn(feignSoapClient);
-    Mockito.when(feignSoapClient.probing(Mockito.any(URI.class), Mockito.any(ProbingRequest.class)))
-        .thenReturn(soapResponse);
+    Mockito.when(feignSoapClient.probing(Mockito.any(URI.class), Mockito.any(ProbingRequest.class),
+        Mockito.anyString())).thenReturn(soapResponse);
 
     TelemetryDto telemetryResult = clientUtil.callProbing(eserviceContentSoapDto);
 

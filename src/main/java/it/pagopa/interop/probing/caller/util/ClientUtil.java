@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 import it.pagopa.interop.probing.caller.config.client.RestClientConfig;
 import it.pagopa.interop.probing.caller.config.client.SoapClientConfig;
+import it.pagopa.interop.probing.caller.config.kms.security.JwtBuilder;
 import it.pagopa.interop.probing.caller.dto.impl.EserviceContentDto;
 import it.pagopa.interop.probing.caller.dto.impl.TelemetryDto;
 import it.pagopa.interop.probing.caller.dtos.Problem;
@@ -25,6 +26,9 @@ public class ClientUtil {
 
   @Autowired
   SoapClientConfig soapClientConfig;
+
+  @Autowired
+  JwtBuilder jwtBuilder;
 
   @Autowired
   private Logger logger;
@@ -56,8 +60,8 @@ public class ClientUtil {
       throws IOException {
     long before = System.currentTimeMillis();
     telemetryResult.checkTime(String.valueOf(before));
-    Response response =
-        restClientConfig.feignRestClient().probing(URI.create(service.basePath()[0]));
+    Response response = restClientConfig.feignRestClient()
+        .probing(URI.create(service.basePath()[0]), jwtBuilder.buildJWT(service.audience()));
     long elapsedTime = System.currentTimeMillis() - before;
     return receiverResponse(response.status(), telemetryResult, decodeReason(response, elapsedTime),
         elapsedTime);
@@ -67,11 +71,10 @@ public class ClientUtil {
     ObjectFactory o = new ObjectFactory();
     long before = System.currentTimeMillis();
     telemetryResult.checkTime(String.valueOf(before));
-    ProbingResponse response = soapClientConfig.feignSoapClient()
-        .probing(URI.create(service.basePath()[0]), o.createProbingRequest());
+    ProbingResponse response =
+        soapClientConfig.feignSoapClient().probing(URI.create(service.basePath()[0]),
+            o.createProbingRequest(), jwtBuilder.buildJWT(service.audience()));
     long elapsedTime = System.currentTimeMillis() - before;
-    logger.logResultCallProbing(Integer.valueOf(response.getStatus()), response.toString(),
-        elapsedTime);
     return receiverResponse(Integer.valueOf(response.getStatus()), telemetryResult,
         response.getDescription(), elapsedTime);
   }
@@ -79,6 +82,7 @@ public class ClientUtil {
   private TelemetryDto receiverResponse(int status, TelemetryDto telemetryResult, String koReason,
       long elapsedTime) {
     if (HttpStatus.valueOf(status).is2xxSuccessful()) {
+      logger.logResultCallProbing(status, koReason, elapsedTime);
       return telemetryResult.status(EserviceStatus.OK).responseTime(elapsedTime);
     } else {
       return telemetryResult.status(EserviceStatus.KO).koReason(koReason);
@@ -89,13 +93,15 @@ public class ClientUtil {
     HttpStatus status = HttpStatus.valueOf(response.status());
     String reason = null;
     if (status.is4xxClientError() || status.is3xxRedirection()) {
-      reason = response.reason();
+      reason = response.reason() != null && response.reason().isEmpty() ? response.reason()
+          : String.valueOf(response.status());
       logger.logResultCallProbing(response.status(), reason, elapsedTime);
     }
     if (HttpStatus.valueOf(response.status()).is5xxServerError()) {
       Problem problem = new ObjectMapper()
           .readValue(response.body().asReader(StandardCharsets.UTF_8), Problem.class);
-      reason = problem.getDetail();
+      reason = problem.getDetail() != null && problem.getDetail().isEmpty() ? problem.getDetail()
+          : String.valueOf(response.status());
       logger.logResultCallProbing(response.status(), problem.toString(), elapsedTime);
     }
     return reason;
