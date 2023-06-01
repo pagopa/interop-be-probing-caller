@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verify;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.concurrent.ExecutionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.awspring.cloud.messaging.listener.Acknowledgment;
 import io.awspring.cloud.messaging.listener.SimpleMessageListenerContainer;
 import it.pagopa.interop.probing.caller.consumer.PollingReceiver;
 import it.pagopa.interop.probing.caller.dto.impl.EserviceContentDto;
@@ -34,22 +36,25 @@ import it.pagopa.interop.probing.caller.util.logging.Logger;
 class PollingReceiverTest {
 
   @InjectMocks
-  PollingReceiver pollingReceiver;
+  private PollingReceiver pollingReceiver;
 
   @Mock
   private ClientUtil clientUtil;
 
   @Mock
-  PollingResultSend pollingResultSend;
+  private PollingResultSend pollingResultSend;
 
   @Mock
-  TelemetryResultSend telemetryResultSend;
+  private TelemetryResultSend telemetryResultSend;
 
   @Mock
-  PollingDto.PollingDtoBuilder builderMock;
+  private PollingDto.PollingDtoBuilder builderMock;
 
   @Mock
-  ObjectMapper mapper;
+  private Acknowledgment acknowledgment;
+
+  @Mock
+  private ObjectMapper mapper;
 
   @Mock
   private Logger logger;
@@ -77,7 +82,8 @@ class PollingReceiverTest {
 
   @Test
   @DisplayName("Reads the message from the queue and pushes it to the polling and telemetry queues.")
-  void testReceiverMessage_whenGivenValidMessage_thenMessageIsSentToQueue() throws IOException {
+  void testReceiverMessage_whenGivenValidMessage_thenMessageIsSentToQueue()
+      throws IOException, ExecutionException, InterruptedException {
 
     try (MockedStatic<PollingDto> pollingBuilder = mockStatic(PollingDto.class);) {
 
@@ -97,7 +103,7 @@ class PollingReceiverTest {
 
       Mockito.when(clientUtil.callProbing(eserviceContentDto)).thenReturn(telemetryDto);
 
-      pollingReceiver.receiveStringMessage(message);
+      pollingReceiver.receiveStringMessage(message, acknowledgment);
 
       verify(clientUtil).callProbing(eserviceContentDto);
       verify(telemetryResultSend).sendMessage(telemetryDto);

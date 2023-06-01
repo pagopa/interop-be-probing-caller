@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -43,16 +44,16 @@ import it.pagopa.interop.probing.caller.util.logging.Logger;
 class ClientUtilTest {
 
   @Mock
-  RestClientConfig restClientConfig;
+  private RestClientConfig restClientConfig;
 
   @Mock
-  SoapClientConfig soapClientConfig;
+  private SoapClientConfig soapClientConfig;
 
   @Mock
-  FeignRestClient feignRestClient;
+  private FeignRestClient feignRestClient;
 
   @Mock
-  FeignSoapClient feignSoapClient;
+  private FeignSoapClient feignSoapClient;
 
   @Mock
   JwtBuilder jwtBuilder;
@@ -64,7 +65,8 @@ class ClientUtilTest {
   private SimpleMessageListenerContainer simpleMessageListenerContainer;
 
   @InjectMocks
-  ClientUtil clientUtil;
+  @Autowired
+  private ClientUtil clientUtil;
 
   @Value("classpath:data/bodyContent.json")
   private Resource bodyContent;

@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -19,17 +20,14 @@ import io.awspring.cloud.messaging.listener.SimpleMessageListenerContainer;
 import it.pagopa.interop.probing.caller.dto.impl.TelemetryDto;
 import it.pagopa.interop.probing.caller.producer.TelemetryResultSend;
 import it.pagopa.interop.probing.caller.util.EserviceStatus;
-import it.pagopa.interop.probing.caller.util.logging.Logger;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 class TelemetryResultSendTest {
 
   @InjectMocks
-  TelemetryResultSend telemetryResultSend;
-
-  @Mock
-  private Logger logger;
+  @Autowired
+  private TelemetryResultSend telemetryResultSend;
 
   @Mock
   private AmazonSQSAsync amazonSQS;
@@ -38,7 +36,7 @@ class TelemetryResultSendTest {
   private SimpleMessageListenerContainer simpleMessageListenerContainer;
 
   @Mock
-  ObjectMapper mapper;
+  private ObjectMapper mapper;
 
   private TelemetryDto telemetryDto;
   private static final String TEST_URL = "http://queue/test-queue";

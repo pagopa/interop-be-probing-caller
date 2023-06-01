@@ -4,7 +4,7 @@ import it.pagopa.interop.probing.caller.dto.impl.TelemetryDto;
 
 public interface Logger {
 
-  void logMessageReceiver(Long id);
+  void logMessageReceiver(Long id, String threadId);
 
   void logMessagePushedToQueue(long eserviceRecordId, String queueLabel);
 
