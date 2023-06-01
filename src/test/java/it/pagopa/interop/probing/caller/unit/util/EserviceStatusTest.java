@@ -6,7 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import it.pagopa.interop.probing.caller.util.EserviceStatus;
 
-class EserviceStateTest {
+class EserviceStatusTest {
   @Test
   @DisplayName("getValue should return the correct value")
   void testGetValue_thenReturnsCorrectValue() {
