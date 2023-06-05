@@ -102,7 +102,7 @@ public class ClientUtil {
           .readValue(response.body().asReader(StandardCharsets.UTF_8), Problem.class);
       reason = problem.getDetail() != null && problem.getDetail().isEmpty() ? problem.getDetail()
           : String.valueOf(response.status());
-      logger.logResultCallProbing(response.status(), problem.toString(), elapsedTime);
+      logger.logResultCallProbing(response.status(), reason, elapsedTime);
     }
     return reason;
   }

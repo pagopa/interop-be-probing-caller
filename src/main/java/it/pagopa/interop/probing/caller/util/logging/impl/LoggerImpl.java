@@ -12,8 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 public class LoggerImpl implements Logger {
 
   @Override
-  public void logMessageReceiver(Long id) {
-    log.info("Writing message, id={}", id);
+  public void logMessageReceiver(Long id, String threadId) {
+    log.info("Writing message, id={}. Message processed by thread {}", id, threadId);
   }
 
   @Override
@@ -33,7 +33,7 @@ public class LoggerImpl implements Logger {
   }
 
   public void logMessagePushedToQueue(long eserviceRecordId, String queueLabel) {
-    log.info("Service with record id {} has been published in SQS {} queue: ", eserviceRecordId,
+    log.info("Service with record id {} has been published in SQS {} queue.", eserviceRecordId,
         queueLabel);
   }
 
