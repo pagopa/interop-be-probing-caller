@@ -3,9 +3,16 @@ package it.pagopa.interop.probing.caller.consumer;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import com.amazonaws.services.sqs.model.Message;
+import com.amazonaws.xray.AWSXRay;
+import com.amazonaws.xray.entities.TraceHeader;
+import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.messaging.listener.Acknowledgment;
 import io.awspring.cloud.messaging.listener.SqsMessageDeletionPolicy;
@@ -17,9 +24,11 @@ import it.pagopa.interop.probing.caller.producer.PollingResultSend;
 import it.pagopa.interop.probing.caller.producer.TelemetryResultSend;
 import it.pagopa.interop.probing.caller.util.ClientUtil;
 import it.pagopa.interop.probing.caller.util.logging.Logger;
+import it.pagopa.interop.probing.caller.util.logging.LoggingPlaceholders;
 
 
 @Component
+@XRayEnabled
 public class PollingReceiver {
 
   @Autowired
@@ -40,8 +49,17 @@ public class PollingReceiver {
   @Async
   @SqsListener(value = "${amazon.sqs.end-point.poll-queue}",
       deletionPolicy = SqsMessageDeletionPolicy.NEVER)
-  public void receiveStringMessage(final String message, Acknowledgment acknowledgment)
-      throws IOException {
+  public void receiveStringMessage(final Message messageFull, final String message,
+      @Headers MessageHeaders headers, Acknowledgment acknowledgment) throws IOException {
+
+    String traceHeaderStr = messageFull.getAttributes().get("AWSTraceHeader");
+    TraceHeader traceHeader = TraceHeader.fromString(traceHeaderStr);
+    AWSXRay.getGlobalRecorder().beginSegment("Interop-be-probing-eservice-registry-updater",
+        traceHeader.getRootTraceId(), traceHeader.getParentId());
+
+    MDC.put(LoggingPlaceholders.TRACE_ID_XRAY_PLACEHOLDER,
+        LoggingPlaceholders.TRACE_ID_XRAY_MDC_PREFIX
+            + AWSXRay.getCurrentSegment().getTraceId().toString() + "]");
     String threadId = Thread.currentThread().getId() + "-" + Thread.currentThread().getName();
 
     EserviceContentDto service = mapper.readValue(message, EserviceContentDto.class);
