@@ -6,8 +6,6 @@ import java.time.ZoneOffset;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.messaging.MessageHeaders;
-import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import com.amazonaws.services.sqs.model.Message;
@@ -52,19 +50,18 @@ public class PollingReceiver {
   @Value("${spring.application.name}")
   private String awsXraySegmentName;
 
-
   @Async
   @SqsListener(value = "${amazon.sqs.end-point.poll-queue}",
       deletionPolicy = SqsMessageDeletionPolicy.NEVER)
-  public void receiveStringMessage(final Message messageFull, final String message,
-      @Headers MessageHeaders headers, Acknowledgment acknowledgment) throws IOException {
+  public void receiveStringMessage(final Message message, Acknowledgment acknowledgment)
+      throws IOException {
 
     AWSXRayRecorderBuilder builder = AWSXRayRecorderBuilder.standard().withDefaultPlugins()
         .withSamplingStrategy(new DefaultSamplingStrategy());
 
     AWSXRay.setGlobalRecorder(builder.build());
 
-    String traceHeaderStr = messageFull.getAttributes().get("AWSTraceHeader");
+    String traceHeaderStr = message.getAttributes().get("AWSTraceHeader");
     TraceHeader traceHeader = TraceHeader.fromString(traceHeaderStr);
     if (AWSXRay.getCurrentSegmentOptional().isEmpty()) {
       AWSXRay.getGlobalRecorder().beginSegment(awsXraySegmentName, traceHeader.getRootTraceId(),
@@ -75,7 +72,7 @@ public class PollingReceiver {
             + AWSXRay.getCurrentSegment().getTraceId().toString() + "]");
     String threadId = Thread.currentThread().getId() + "-" + Thread.currentThread().getName();
 
-    EserviceContentDto service = mapper.readValue(message, EserviceContentDto.class);
+    EserviceContentDto service = mapper.readValue(message.getBody(), EserviceContentDto.class);
 
     try {
       TelemetryDto telemetryDto = clientUtil.callProbing(service);
