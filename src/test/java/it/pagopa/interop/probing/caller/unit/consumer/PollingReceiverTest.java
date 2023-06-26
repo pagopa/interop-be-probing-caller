@@ -59,9 +59,6 @@ class PollingReceiverTest {
   private Acknowledgment acknowledgment;
 
   @Mock
-  private Message message;
-
-  @Mock
   private ObjectMapper mapper;
 
   @Mock
@@ -74,6 +71,7 @@ class PollingReceiverTest {
   private TelemetryDto telemetryDto;
   private PollingDto pollingDto;
   private EserviceContentDto eserviceContentDto;
+  private Message message = new Message();
   private Map<String, String> attributes = new HashMap<>();
   private String mockedId = "mockedId";
 
@@ -114,8 +112,8 @@ class PollingReceiverTest {
       String messageString =
           "{\"eserviceRecordId\":1,\"technology\":\"REST\",\"basePath\":[\"path1\",\"path2\"],\"audience\":[\"aud1\",\"path2\"]}";
 
-      Mockito.when(message.getBody()).thenReturn(messageString);
-      Mockito.when(message.getAttributes()).thenReturn(attributes);
+      message.setBody(messageString);
+      message.setAttributes(attributes);
 
       Mockito.when(mapper.readValue(messageString, EserviceContentDto.class))
           .thenReturn(eserviceContentDto);
