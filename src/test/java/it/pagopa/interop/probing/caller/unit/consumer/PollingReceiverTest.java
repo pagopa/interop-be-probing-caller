@@ -5,7 +5,10 @@ import static org.mockito.Mockito.verify;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +20,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import com.amazonaws.services.sqs.model.Message;
+import com.amazonaws.xray.AWSXRay;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.messaging.listener.Acknowledgment;
 import io.awspring.cloud.messaging.listener.SimpleMessageListenerContainer;
@@ -54,6 +59,9 @@ class PollingReceiverTest {
   private Acknowledgment acknowledgment;
 
   @Mock
+  private Message message;
+
+  @Mock
   private ObjectMapper mapper;
 
   @Mock
@@ -66,10 +74,12 @@ class PollingReceiverTest {
   private TelemetryDto telemetryDto;
   private PollingDto pollingDto;
   private EserviceContentDto eserviceContentDto;
+  private Map<String, String> attributes = new HashMap<>();
+  private String mockedId = "mockedId";
 
   @BeforeEach
   void setup() {
-
+    AWSXRay.beginSegment("Segment-test");
     String[] audience = {"aud1", "aud2"};
     String[] basePath = {"basePath1", "basePath2"};
     eserviceContentDto = EserviceContentDto.builder().eserviceRecordId(1L)
@@ -78,6 +88,12 @@ class PollingReceiverTest {
         .responseTime(12345L).koReason(null).checkTime("12345").build();
     pollingDto = PollingDto.builder().eserviceRecordId(1L)
         .responseReceived(OffsetDateTime.now(ZoneOffset.UTC)).status(EserviceStatus.OK).build();
+    attributes.put("AWSTraceHeader", mockedId);
+  }
+
+  @AfterEach
+  void clean() {
+    AWSXRay.endSegment();
   }
 
   @Test
@@ -95,10 +111,13 @@ class PollingReceiverTest {
 
       Mockito.when(builderMock.build()).thenReturn(pollingDto);
 
-      String message =
+      String messageString =
           "{\"eserviceRecordId\":1,\"technology\":\"REST\",\"basePath\":[\"path1\",\"path2\"],\"audience\":[\"aud1\",\"path2\"]}";
 
-      Mockito.when(mapper.readValue(message, EserviceContentDto.class))
+      Mockito.when(message.getBody()).thenReturn(messageString);
+      Mockito.when(message.getAttributes()).thenReturn(attributes);
+
+      Mockito.when(mapper.readValue(messageString, EserviceContentDto.class))
           .thenReturn(eserviceContentDto);
 
       Mockito.when(clientUtil.callProbing(eserviceContentDto)).thenReturn(telemetryDto);
