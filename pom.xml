@@ -210,11 +210,6 @@
 			<groupId>io.github.openfeign</groupId>
 			<artifactId>feign-httpclient</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-xray-recorder-sdk-aws-sdk-instrumentor</artifactId>
-			<version>${com.amazonaws.version}</version>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
