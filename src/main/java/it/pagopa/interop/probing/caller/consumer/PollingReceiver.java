@@ -86,7 +86,6 @@ public class PollingReceiver {
       acknowledgment.acknowledge();
 
       logger.logMessageReceiver(service.eserviceRecordId(), threadId);
-      AWSXRay.endSegment();
     } catch (IOException e) {
       logger.logMessageException(e);
       throw e;
