@@ -10,10 +10,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.xray.AWSXRay;
-import com.amazonaws.xray.AWSXRayRecorderBuilder;
 import com.amazonaws.xray.entities.TraceHeader;
 import com.amazonaws.xray.spring.aop.XRayEnabled;
-import com.amazonaws.xray.strategy.sampling.DefaultSamplingStrategy;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.messaging.listener.Acknowledgment;
 import io.awspring.cloud.messaging.listener.SqsMessageDeletionPolicy;
@@ -55,11 +53,11 @@ public class PollingReceiver {
       deletionPolicy = SqsMessageDeletionPolicy.NEVER)
   public void receiveStringMessage(final Message message, Acknowledgment acknowledgment)
       throws IOException {
-
-    AWSXRayRecorderBuilder builder = AWSXRayRecorderBuilder.standard().withDefaultPlugins()
-        .withSamplingStrategy(new DefaultSamplingStrategy());
-
-    AWSXRay.setGlobalRecorder(builder.build());
+    //
+    // AWSXRayRecorderBuilder builder = AWSXRayRecorderBuilder.standard().withDefaultPlugins()
+    // .withSamplingStrategy(new DefaultSamplingStrategy());
+    //
+    // AWSXRay.setGlobalRecorder(builder.build());
 
     String traceHeaderStr = message.getAttributes().get("AWSTraceHeader");
     TraceHeader traceHeader = TraceHeader.fromString(traceHeaderStr);
@@ -86,10 +84,11 @@ public class PollingReceiver {
       acknowledgment.acknowledge();
 
       logger.logMessageReceiver(service.eserviceRecordId(), threadId);
+      AWSXRay.endSegment();
     } catch (IOException e) {
       logger.logMessageException(e);
       throw e;
     }
-    AWSXRay.endSegment();
+
   }
 }
