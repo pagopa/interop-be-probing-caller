@@ -89,9 +89,10 @@ public class ClientUtil {
     if (HttpStatus.valueOf(status).is2xxSuccessful()) {
       logger.logResultCallProbing(status, koReason, elapsedTime);
       return telemetryResult.status(EserviceStatus.OK).responseTime(elapsedTime);
-    } else {
+    } else if (HttpStatus.valueOf(status).equals(HttpStatus.REQUEST_TIMEOUT)) {
       return telemetryResult.status(EserviceStatus.KO).koReason(koReason);
-    }
+    } else
+      return telemetryResult.status(EserviceStatus.KO).koReason(koReason).responseTime(elapsedTime);
   }
 
   private String decodeReason(Response response, long elapsedTime) throws IOException {
