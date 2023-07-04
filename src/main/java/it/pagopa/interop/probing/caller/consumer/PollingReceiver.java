@@ -53,11 +53,6 @@ public class PollingReceiver {
       deletionPolicy = SqsMessageDeletionPolicy.NEVER)
   public void receiveStringMessage(final Message message, Acknowledgment acknowledgment)
       throws IOException {
-    //
-    // AWSXRayRecorderBuilder builder = AWSXRayRecorderBuilder.standard().withDefaultPlugins()
-    // .withSamplingStrategy(new DefaultSamplingStrategy());
-    //
-    // AWSXRay.setGlobalRecorder(builder.build());
 
     String traceHeaderStr = message.getAttributes().get("AWSTraceHeader");
     TraceHeader traceHeader = TraceHeader.fromString(traceHeaderStr);
