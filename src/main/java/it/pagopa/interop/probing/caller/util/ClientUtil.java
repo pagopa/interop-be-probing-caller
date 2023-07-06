@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import com.amazonaws.xray.AWSXRay;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 import it.pagopa.interop.probing.caller.config.client.RestClientConfig;
@@ -60,8 +61,10 @@ public class ClientUtil {
       throws IOException {
     long before = System.currentTimeMillis();
     telemetryResult.checkTime(String.valueOf(before));
+    AWSXRay.beginSubsegment("Rest_call_to :".concat(service.basePath()[0]));
     Response response = restClientConfig.feignRestClient()
         .probing(URI.create(service.basePath()[0]), jwtBuilder.buildJWT(service.audience()));
+    AWSXRay.endSubsegment();
     long elapsedTime = System.currentTimeMillis() - before;
     return receiverResponse(response.status(), telemetryResult, decodeReason(response, elapsedTime),
         elapsedTime);
@@ -71,9 +74,11 @@ public class ClientUtil {
     ObjectFactory o = new ObjectFactory();
     long before = System.currentTimeMillis();
     telemetryResult.checkTime(String.valueOf(before));
+    AWSXRay.beginSubsegment("Soap_call_to :".concat(service.basePath()[0]));
     ProbingResponse response =
         soapClientConfig.feignSoapClient().probing(URI.create(service.basePath()[0]),
             o.createProbingRequest(), jwtBuilder.buildJWT(service.audience()));
+    AWSXRay.endSubsegment();
     long elapsedTime = System.currentTimeMillis() - before;
     return receiverResponse(Integer.valueOf(response.getStatus()), telemetryResult,
         response.getDescription(), elapsedTime);
