@@ -53,7 +53,7 @@ public class ClientUtil {
       logger.logMessageException(e);
       throw e;
     } catch (Exception e) {
-      logger.logMessageException(e);
+      logger.logMessageHandledException(e);
       telemetryResult.status(EserviceStatus.KO).koReason(e.getMessage());
     }
     logger.logMessageResponseCallProbing(telemetryResult);
