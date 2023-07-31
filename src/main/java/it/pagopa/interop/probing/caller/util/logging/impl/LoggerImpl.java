@@ -42,4 +42,9 @@ public class LoggerImpl implements Logger {
     log.error(ExceptionUtils.getStackTrace(exception));
   }
 
+  @Override
+  public void logMessageHandledException(Exception exception) {
+    log.info(ExceptionUtils.getStackTrace(exception));
+  }
+
 }

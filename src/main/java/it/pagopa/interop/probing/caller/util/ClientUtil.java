@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import com.amazonaws.SdkBaseException;
 import com.amazonaws.xray.AWSXRay;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
@@ -48,9 +49,11 @@ public class ClientUtil {
       } else {
         telemetryResult = callSoap(telemetryResult, service);
       }
-
-    } catch (Exception e) {
+    } catch (SdkBaseException e) {
       logger.logMessageException(e);
+      throw e;
+    } catch (Exception e) {
+      logger.logMessageHandledException(e);
       telemetryResult.status(EserviceStatus.KO).koReason(e.getMessage());
     }
     logger.logMessageResponseCallProbing(telemetryResult);
