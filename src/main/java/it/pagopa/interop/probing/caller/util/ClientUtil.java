@@ -18,6 +18,7 @@ import it.pagopa.interop.probing.caller.dto.impl.TelemetryDto;
 import it.pagopa.interop.probing.caller.dtos.Problem;
 import it.pagopa.interop.probing.caller.soap.probing.ObjectFactory;
 import it.pagopa.interop.probing.caller.soap.probing.ProbingResponse;
+import it.pagopa.interop.probing.caller.util.constant.ProjectConstants;
 import it.pagopa.interop.probing.caller.util.logging.Logger;
 
 @Component
@@ -65,8 +66,9 @@ public class ClientUtil {
     long before = System.currentTimeMillis();
     telemetryResult.checkTime(String.valueOf(before));
     AWSXRay.beginSubsegment("Rest_call_to :".concat(service.basePath()[0]));
-    Response response = restClientConfig.feignRestClient()
-        .probing(URI.create(service.basePath()[0]), jwtBuilder.buildJWT(service.audience()));
+    Response response = restClientConfig.feignRestClient().probing(
+        URI.create(service.basePath()[0] + ProjectConstants.PROBING_ENDPOINT_SUFFIX),
+        jwtBuilder.buildJWT(service.audience()));
     AWSXRay.endSubsegment();
     long elapsedTime = System.currentTimeMillis() - before;
     return receiverResponse(response.status(), telemetryResult, decodeReason(response, elapsedTime),
@@ -78,9 +80,9 @@ public class ClientUtil {
     long before = System.currentTimeMillis();
     telemetryResult.checkTime(String.valueOf(before));
     AWSXRay.beginSubsegment("Soap_call_to :".concat(service.basePath()[0]));
-    ProbingResponse response =
-        soapClientConfig.feignSoapClient().probing(URI.create(service.basePath()[0]),
-            o.createProbingRequest(), jwtBuilder.buildJWT(service.audience()));
+    ProbingResponse response = soapClientConfig.feignSoapClient().probing(
+        URI.create(service.basePath()[0] + ProjectConstants.PROBING_ENDPOINT_SUFFIX),
+        o.createProbingRequest(), jwtBuilder.buildJWT(service.audience()));
     AWSXRay.endSubsegment();
     long elapsedTime = System.currentTimeMillis() - before;
     return receiverResponse(Integer.valueOf(response.getStatus()), telemetryResult,

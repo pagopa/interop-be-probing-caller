@@ -8,6 +8,7 @@ public class ProjectConstants {
 
   public static final String SQS_TELEMETRY_LOG_LABEL = "Telemetry result";
   public static final String SQS_POLLING_LOG_LABEL = "Polling result";
+  public static final String PROBING_ENDPOINT_SUFFIX = "/interop/probing";
   public static final String JWT_SIGNING_ALGORITHM = "RSASSA_PKCS1_V1_5_SHA_256";
 
 }
