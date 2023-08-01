@@ -3,6 +3,7 @@ package it.pagopa.interop.probing.caller.util;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import it.pagopa.interop.probing.caller.dto.impl.TelemetryDto;
 import it.pagopa.interop.probing.caller.dtos.Problem;
 import it.pagopa.interop.probing.caller.soap.probing.ObjectFactory;
 import it.pagopa.interop.probing.caller.soap.probing.ProbingResponse;
+import it.pagopa.interop.probing.caller.util.constant.ProjectConstants;
 import it.pagopa.interop.probing.caller.util.logging.Logger;
 
 @Component
@@ -64,9 +66,11 @@ public class ClientUtil {
       throws IOException {
     long before = System.currentTimeMillis();
     telemetryResult.checkTime(String.valueOf(before));
-    AWSXRay.beginSubsegment("Rest_call_to :".concat(service.basePath()[0]));
-    Response response = restClientConfig.feignRestClient()
-        .probing(URI.create(service.basePath()[0]), jwtBuilder.buildJWT(service.audience()));
+    String eserviceUrl = StringUtils.removeEnd(service.basePath()[0], "/")
+        + ProjectConstants.PROBING_ENDPOINT_SUFFIX;
+    AWSXRay.beginSubsegment("Rest_call_to :".concat(eserviceUrl));
+    Response response = restClientConfig.feignRestClient().probing(URI.create(eserviceUrl),
+        jwtBuilder.buildJWT(service.audience()));
     AWSXRay.endSubsegment();
     long elapsedTime = System.currentTimeMillis() - before;
     return receiverResponse(response.status(), telemetryResult, decodeReason(response, elapsedTime),
@@ -77,10 +81,11 @@ public class ClientUtil {
     ObjectFactory o = new ObjectFactory();
     long before = System.currentTimeMillis();
     telemetryResult.checkTime(String.valueOf(before));
-    AWSXRay.beginSubsegment("Soap_call_to :".concat(service.basePath()[0]));
-    ProbingResponse response =
-        soapClientConfig.feignSoapClient().probing(URI.create(service.basePath()[0]),
-            o.createProbingRequest(), jwtBuilder.buildJWT(service.audience()));
+    String eserviceUrl = StringUtils.removeEnd(service.basePath()[0], "/")
+        + ProjectConstants.PROBING_ENDPOINT_SUFFIX;
+    AWSXRay.beginSubsegment("Soap_call_to :".concat(eserviceUrl));
+    ProbingResponse response = soapClientConfig.feignSoapClient().probing(URI.create(eserviceUrl),
+        o.createProbingRequest(), jwtBuilder.buildJWT(service.audience()));
     AWSXRay.endSubsegment();
     long elapsedTime = System.currentTimeMillis() - before;
     return receiverResponse(Integer.valueOf(response.getStatus()), telemetryResult,

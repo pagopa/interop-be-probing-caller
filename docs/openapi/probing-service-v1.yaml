@@ -21,7 +21,7 @@ tags:
       Read data operations.
 
 paths:
-   '/interop/probing/v1':
+   '/interop/probing':
     get:
       summary: Provides the status of the E-Service
       tags:

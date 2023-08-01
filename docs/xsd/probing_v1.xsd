@@ -1,6 +1,6 @@
 
 <xsd:schema
-	targetNamespace="http://it/pagopa/interop/probing/v1"
+	targetNamespace="http://it/pagopa/interop/probing"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<xsd:element name="probingRequest">
 		<xsd:complexType>

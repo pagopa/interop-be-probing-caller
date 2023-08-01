@@ -13,7 +13,7 @@ import it.pagopa.interop.probing.caller.soap.probing.ProbingResponse;
 public interface FeignSoapClient {
 
   @RequestLine("POST")
-  @Headers({"SOAPAction: probing/v1", "Content-Type: text/xml;charset=UTF-8",
+  @Headers({"SOAPAction: interop/probing", "Content-Type: text/xml;charset=UTF-8",
       "Authorization:Bearer {Authorization}", "Accept: text/xml"})
   ProbingResponse probing(URI url, ProbingRequest body,
       @Param(HttpHeaders.AUTHORIZATION) String authorizationHeader);
