@@ -10,6 +10,8 @@ public interface Logger {
 
   void logMessageException(Exception exception);
 
+  void logMessageHandledException(Exception exception);
+
   void logMessageCallProbing(String technology, String url);
 
   void logResultCallProbing(int code, String body, long elapsedTime);
