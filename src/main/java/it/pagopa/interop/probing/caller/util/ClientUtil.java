@@ -56,9 +56,8 @@ public class ClientUtil {
       throw e;
     } catch (Exception e) {
       logger.logMessageHandledException(e);
-      telemetryResult.status(EserviceStatus.KO).koReason(e.getMessage());
+      buildHandledResponse(e, telemetryResult);
     }
-    logger.logMessageResponseCallProbing(telemetryResult);
     return telemetryResult;
   }
 
@@ -82,7 +81,7 @@ public class ClientUtil {
     long before = System.currentTimeMillis();
     telemetryResult.checkTime(String.valueOf(before));
     String eserviceUrl = StringUtils.removeEnd(service.basePath()[0], "/")
-        + ProjectConstants.PROBING_ENDPOINT_SUFFIX;
+        + ProjectConstants.PROBING_ENDPOINT_SUFFIX;;
     AWSXRay.beginSubsegment("Soap_call_to :".concat(eserviceUrl));
     ProbingResponse response = soapClientConfig.feignSoapClient().probing(URI.create(eserviceUrl),
         o.createProbingRequest(), jwtBuilder.buildJWT(service.audience()));
@@ -98,9 +97,11 @@ public class ClientUtil {
       logger.logResultCallProbing(status, koReason, elapsedTime);
       return telemetryResult.status(EserviceStatus.OK).responseTime(elapsedTime);
     } else if (HttpStatus.valueOf(status).equals(HttpStatus.REQUEST_TIMEOUT)) {
-      return telemetryResult.status(EserviceStatus.KO).koReason(koReason);
+      return telemetryResult.status(EserviceStatus.KO)
+          .koReason(HttpStatus.REQUEST_TIMEOUT.getReasonPhrase());
     } else
-      return telemetryResult.status(EserviceStatus.KO).koReason(koReason).responseTime(elapsedTime);
+      return telemetryResult.status(EserviceStatus.KO).koReason(String.valueOf(status))
+          .responseTime(elapsedTime);
   }
 
   private String decodeReason(Response response, long elapsedTime) throws IOException {
@@ -119,6 +120,18 @@ public class ClientUtil {
       logger.logResultCallProbing(response.status(), reason, elapsedTime);
     }
     return reason;
+  }
+
+  public TelemetryDto buildHandledResponse(Exception e, TelemetryDto telemetryResult) {
+    if (e.getCause().getClass().getSimpleName().equals("ConnectException")) {
+      return telemetryResult.status(EserviceStatus.KO)
+          .koReason(ProjectConstants.CONNECTION_REFUSED_KO_REASON);
+    }
+    if (e.getCause().getClass().getSimpleName().equals("SocketTimeoutException")) {
+      return telemetryResult.status(EserviceStatus.KO)
+          .koReason(ProjectConstants.CONNECTION_TIMEOUT_KO_REASON);
+    }
+    return telemetryResult.status(EserviceStatus.KO).koReason(ProjectConstants.UNKNOWN_KO_REASON);
   }
 
 }

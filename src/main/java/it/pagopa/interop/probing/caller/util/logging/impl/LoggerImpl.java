@@ -44,7 +44,7 @@ public class LoggerImpl implements Logger {
 
   @Override
   public void logMessageHandledException(Exception exception) {
-    log.info(ExceptionUtils.getStackTrace(exception));
+    log.warn(ExceptionUtils.getStackTrace(exception));
   }
 
 }
