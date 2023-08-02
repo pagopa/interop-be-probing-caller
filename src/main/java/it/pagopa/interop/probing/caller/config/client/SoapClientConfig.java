@@ -2,6 +2,7 @@ package it.pagopa.interop.probing.caller.config.client;
 
 import org.springframework.context.annotation.Configuration;
 import feign.Feign;
+import feign.Retryer;
 import feign.Target;
 import feign.jaxb.JAXBContextFactory;
 import feign.soap.SOAPDecoder;
@@ -24,6 +25,6 @@ public class SoapClientConfig {
 
     feignSoapClient =
         Feign.builder().encoder(new SOAPEncoder(jaxbFactory)).decoder(new SOAPDecoder(jaxbFactory))
-            .target(Target.EmptyTarget.create(FeignSoapClient.class));
+            .retryer(Retryer.NEVER_RETRY).target(Target.EmptyTarget.create(FeignSoapClient.class));
   }
 }
