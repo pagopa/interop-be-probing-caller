@@ -69,6 +69,8 @@ public class PollingReceiver {
 
     try {
       TelemetryDto telemetryDto = clientUtil.callProbing(service);
+      logger.logMessageResponseCallProbing(telemetryDto);
+
       telemetryResultSend.sendMessage(telemetryDto);
 
       pollingResultSend
