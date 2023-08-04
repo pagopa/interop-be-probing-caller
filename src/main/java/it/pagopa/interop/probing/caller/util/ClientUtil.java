@@ -81,7 +81,7 @@ public class ClientUtil {
     long before = System.currentTimeMillis();
     telemetryResult.checkTime(String.valueOf(before));
     String eserviceUrl = StringUtils.removeEnd(service.basePath()[0], "/")
-        + ProjectConstants.PROBING_ENDPOINT_SUFFIX;;
+        + ProjectConstants.PROBING_ENDPOINT_SUFFIX;
     AWSXRay.beginSubsegment("Soap_call_to :".concat(eserviceUrl));
     ProbingResponse response = soapClientConfig.feignSoapClient().probing(URI.create(eserviceUrl),
         o.createProbingRequest(), jwtBuilder.buildJWT(service.audience()));
